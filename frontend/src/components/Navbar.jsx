@@ -1,52 +1,44 @@
 import React from "react";
 
-const Navbar = () => {
+export default function Navbar() {
   return (
-    <nav className="bg-[#f6f9fc] px-6 py-4 flex items-center justify-between shadow-sm">
-      {/* Logo */}
-      <div className="flex items-center gap-2">
-        <div className="bg-blue-600 p-2 rounded-lg">
-          <span className="text-white font-bold text-lg">S</span>
-        </div>
-        <span className="text-black font-semibold text-xl">Superio</span>
-      </div>
+    <nav className="bg-white shadow-md px-6 py-4">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        {/* Logo */}
+        <div className="text-xl font-bold text-blue-600">JobWalla</div>
 
-      {/* Links */}
-      <div className="flex items-center gap-6 text-sm font-medium">
-        <div className="group relative">
-          <button className="text-blue-600">Home</button>
+        {/* Navigation Links */}
+        <div className="hidden md:flex space-x-6">
+          <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">
+            Home
+          </a>
+          <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">
+            Features
+          </a>
+          <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">
+            Pricing
+          </a>
+          <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">
+            About
+          </a>
         </div>
-        <div className="group relative">
-          <button className="text-black hover:text-blue-600">Find Jobs</button>
-        </div>
-        <div className="group relative">
-          <button className="text-black hover:text-blue-600">Employers</button>
-        </div>
-        <div className="group relative">
-          <button className="text-black hover:text-blue-600">Candidates</button>
-        </div>
-        <div className="group relative">
-          <button className="text-black hover:text-blue-600">Blog</button>
-        </div>
-        <div className="group relative">
-          <button className="text-black hover:text-blue-600">Pages</button>
-        </div>
-        <a href="#" className="text-blue-600 hover:underline">
-          Upload your CV
-        </a>
-      </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-3">
-        <button className="bg-blue-100 text-blue-600 font-semibold px-4 py-2 rounded-md">
-          Login / Register
-        </button>
-        <button className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-md">
-          Job Post
-        </button>
+        {/* Buttons */}
+        <div className="hidden md:flex space-x-4">
+          <a
+            href="#"
+            className="px-4 py-2 text-sm text-blue-600 font-medium border border-blue-600 rounded-xl hover:bg-blue-50 transition"
+          >
+            Log In
+          </a>
+          <a
+            href="#"
+            className="px-4 py-2 text-sm text-white font-medium bg-blue-600 rounded-xl hover:bg-blue-700 transition"
+          >
+            Sign Up
+          </a>
+        </div>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
