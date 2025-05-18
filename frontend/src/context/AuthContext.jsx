@@ -43,6 +43,9 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  //always check if user is logged in when the app loads
+  
+
   const isAuthenticated = !!user;
 
   return (

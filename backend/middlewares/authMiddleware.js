@@ -1,65 +1,62 @@
 import jwt from "jsonwebtoken";
-import { sql } from "../lib/db.js";
 import dotenv from "dotenv";
-
 dotenv.config();
 
-export const protectRoute = async (req, res, next) => {
+export const isAuth = async (req, res, next) => {
   try {
-    //get the access token from the request cookies
     const token = req.cookies.token;
 
-    //check if access token is provided in request cookies
     if (!token) {
       return res.status(401).json({
-        message: "No access token provided",
+        message: "No token provided, please login",
       });
     }
 
     //decode access token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    //find user from database
+    //set userId in request
+    req.userId = decoded.userId;
 
-    const user = await sql`
-        SELECT user_id, name, email, role, created_at 
-        FROM users
-        WHERE user_id = ${decoded.id}
-    `;
-
-    //check if user exists in the database
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
-    }
-
-    req.user = user[0];
     next();
   } catch (error) {
-    console.log("Error in  protectRoute", error.message);
+    console.log("Error in isAuth middleware", error.message);
     res.status(401).json({
-      message: "Error in protectRoute",
+      message: "Unauthorized, please login",
       error: error.message,
     });
   }
 };
 
-
-export const employerRole = async (req, res, next) => {
+export const isEmployer = async (req, res, next) => {
   try {
-    //check if user is an employer
-    if (req.user && req.user.role === "employer") {
-      next();
-    } else {
-      return res.status(403).json({
-        message: "You are not authorized to access this route",
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({
+        message: "No token provided, please login",
       });
     }
+
+    // Decode access token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Check if role is employer
+    if (decoded.role !== "employer") {
+      return res.status(403).json({
+        message: "Access denied. Employers only.",
+      });
+    }
+
+    // Set user info in request
+    req.userId = decoded.userId;
+    req.userRole = decoded.role;
+
+    next();
   } catch (error) {
-    console.log("Error in employer route", error.message);
-    res.status(403).json({
-      message: "Error in adminRoute",
+    console.log("Error in isEmployer middleware", error.message);
+    res.status(401).json({
+      message: "Unauthorized, please login",
       error: error.message,
     });
   }

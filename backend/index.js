@@ -3,16 +3,18 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import {connectDB} from "./lib/db.js";
+dotenv.config();
 
 
 //import routes
-import authRoutes from "./routes/authRoute.js";
-import jobRoutes from "./routes/jobRoute.js";
+import userRoute from "./routes/userRoute.js";
+import employerRoute from "./routes/employerRoute.js";
 
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+
 
 //inbuilt middlewares
 app.use(express.json({ limit: "10mb" })); // allows you to parse the body of the request
@@ -25,8 +27,8 @@ app.use(
 );
 
 //use routes
-app.use("/auth", authRoutes);
-app.use("/job", jobRoutes);
+app.use("/user", userRoute);
+app.use("/employer", employerRoute);
 
 
 app.listen(PORT, () => {

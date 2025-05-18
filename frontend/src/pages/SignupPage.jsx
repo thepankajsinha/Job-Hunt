@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignupPage() {
   const { signup } = useAuth();
@@ -16,7 +16,7 @@ export default function SignupPage() {
     const success = await signup(name, email, password, role);
     if (success) {
       alert("Signup successful");
-      // navigate("/login");
+      navigate("/login");
     } else {
       alert("Signup failed");
     }
@@ -108,9 +108,10 @@ export default function SignupPage() {
         </form>
         <p className="text-sm text-center text-gray-500 mt-4">
           Already have an account ?{" "}
-          <a href="#" className="text-blue-600 hover:underline">
+
+          <Link to="/login" className="text-blue-600 hover:underline">
             Log in
-          </a>
+          </Link>
         </p>
       </div>
     </div>
