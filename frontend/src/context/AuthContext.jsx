@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await api.post("/auth/login", { email, password });
+      const res = await api.post("/user/login", { email, password });
       const { user } = res.data;
       setUser(user);
       alert("Login successful");
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password, role) => {
     try {
-      await api.post("/auth/register", {name,email,password,role});
+      await api.post("/user/signup", {name,email,password,role});
       alert("User created successfully");
       return true;
     } catch (err) {
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await api.post("/auth/logout");
+      await api.post("/user/logout");
       alert("Logout successful");
     } catch (err) {
       console.error("Logout error:", err);
