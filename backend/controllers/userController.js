@@ -118,6 +118,36 @@ export const getProfile = async (req, res) => {
   }
 };
 
+export const updateProfile = async (req, res) => {
+  try {
+    // Get user ID from request
+    const userId = req.userId;
+
+    // Validate request body
+    const { name, email, password } = req.body;
+
+    // Check if all fields are provided
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Please enter all fields" });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update user profile in database
+    await sql`UPDATE users SET name = ${name}, email = ${email}, password_hash = ${hashedPassword} WHERE user_id = ${userId}`;
+
+    res.json({ message: "Profile updated successfully" });
+  } catch (error) {
+    console.error("Error in updateProfile:", error.message);
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+}
+
+
 export const deleteProfile = async (req, res) => {
   try {
     // Get user ID from request

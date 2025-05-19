@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { sql } from "../lib/db.js";
 dotenv.config();
 
 export const isAuth = async (req, res, next) => {
@@ -48,9 +49,14 @@ export const isEmployer = async (req, res, next) => {
       });
     }
 
+    //find employer id in database
+    const employer = await sql`SELECT * FROM employers WHERE user_id = ${decoded.userId}`;
+
+
     // Set user info in request
     req.userId = decoded.userId;
     req.userRole = decoded.role;
+    req.employerId = employer[0].employer_id;
 
     next();
   } catch (error) {

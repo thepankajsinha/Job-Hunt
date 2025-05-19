@@ -9,6 +9,7 @@ dotenv.config();
 //import routes
 import userRoute from "./routes/userRoute.js";
 import employerRoute from "./routes/employerRoute.js";
+import jobRoute from "./routes/jobRoute.js";
 
 
 const app = express();
@@ -29,6 +30,7 @@ app.use(
 //use routes
 app.use("/user", userRoute);
 app.use("/employer", employerRoute);
+app.use("/job", jobRoute);
 
 
 app.listen(PORT, () => {
