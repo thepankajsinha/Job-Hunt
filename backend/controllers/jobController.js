@@ -1,5 +1,6 @@
 import { sql } from "../lib/db.js";
 
+//create job
 export const createJob = async (req, res) => {
 
     const employer_id = req.employerId;
