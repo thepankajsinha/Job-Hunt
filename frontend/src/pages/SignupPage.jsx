@@ -13,13 +13,8 @@ export default function SignupPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await signup(name, email, password, role);
-    if (success) {
-      alert("Signup successful");
-      navigate("/login");
-    } else {
-      alert("Signup failed");
-    }
+    await signup(name, email, password, role);
+    navigate("/login");
     setName("");
     setEmail("");
     setPassword("");

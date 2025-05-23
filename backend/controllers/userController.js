@@ -68,7 +68,7 @@ export const login = async (req, res) => {
             sameSite: 'strict', // CSRF protection
         });
         
-        res.json({ message: "Logged in successfully"})
+        res.json({user : user[0], message: "Logged in successfully"})
         
     } catch (error) {
         console.error("Error in login:", error.message);
@@ -102,13 +102,13 @@ export const getProfile = async (req, res) => {
     const userId = req.userId;
 
     // Fetch user profile from database
-    const user = await sql`SELECT user_id, name, email, role FROM users WHERE user_id = ${userId}`;
+    const user = await sql`SELECT * FROM users WHERE user_id = ${userId}`;
 
     if (user.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json(user[0]);
+    res.json({user : user[0], message: "Profile fetched successfully"});
   } catch (error) {
     console.error("Error in getProfile:", error.message);
     res.status(500).json({

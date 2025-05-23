@@ -9,41 +9,11 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
-
-
-  // Load saved credentials on mount
-  useEffect(() => {
-    const savedEmail = localStorage.getItem("email");
-    const savedPassword = localStorage.getItem("password");
-    if (savedEmail && savedPassword) {
-      setEmail(savedEmail);
-      setPassword(savedPassword);
-      setRemember(true);
-    }
-  }, []);
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const success = await login(email, password);
-    if (success) {
-      navigate("/jobseeker-dashboard");
-    } else {
-      alert("Login failed");
-    }
-
-    // Remember-me logic
-    if (remember) {
-      localStorage.setItem("email", email);
-      localStorage.setItem("password", password);
-    } else {
-      localStorage.removeItem("email");
-      localStorage.removeItem("password");
-    }
-
+    await login(email, password);
+    navigate("/");
   };
 
   return (
@@ -81,18 +51,7 @@ export default function LoginPage() {
               required
             />
           </div>
-          <div className="flex items-center justify-between">
-            <label className="flex items-center space-x-2 text-sm text-gray-600">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <span>Remember me</span>
-            </label>
-          </div>
+
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
