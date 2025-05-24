@@ -1,12 +1,21 @@
-import { sql } from "../lib/db.js";
+import { sql } from "./lib/db.js";
 
 //create job
 export const createJob = async (req, res) => {
-
-    const employer_id = req.employerId;
-
   try {
     
+    const user_id = req.userId;
+
+    //find employer_id using user_id
+    const employer = await sql`SELECT employer_id FROM employers WHERE user_id = ${user_id}`;
+    if (employer.length === 0) {
+      return res.status(404).json({
+        message: "Employer not found",
+      });
+    }
+
+    const employer_id = employer[0].employer_id;
+
     const { job_title, job_description, location, salary_range, job_type } = req.body;
 
     // Validate request body
@@ -26,17 +35,28 @@ export const createJob = async (req, res) => {
     console.error("Error in createJob:", error.message);
     res.status(500).json({
       message: "Server error",
-      error: error.message,
     });
   }
 }
 
 //update job
 export const updateJob = async (req, res) => {
-  const employer_id = req.employerId;
-  const job_id = req.params.job_id;
 
   try {
+    const user_id = req.userId;
+    const job_id = req.params.job_id;
+
+    //find employer_id using user_id
+    const employer =
+      await sql`SELECT employer_id FROM employers WHERE user_id = ${user_id}`;
+      if (employer.length === 0) {
+        return res.status(404).json({
+          message: "Employer not found",
+        });
+    }
+
+    const employer_id = employer[0].employer_id;
+
     const { job_title, job_description, location, salary_range, job_type } = req.body;
 
     // Validate request body
@@ -47,7 +67,20 @@ export const updateJob = async (req, res) => {
     }
 
     // Update job
-    await sql`UPDATE jobs SET job_title = ${job_title}, job_description = ${job_description}, location = ${location}, salary_range = ${salary_range}, job_type = ${job_type} WHERE id = ${job_id} AND employer_id = ${employer_id}`;
+    const result = await sql`
+      UPDATE jobs
+      SET job_title = ${job_title},
+          job_description = ${job_description},
+          location = ${location},
+          salary_range = ${salary_range},
+          job_type = ${job_type}
+      WHERE job_id = ${job_id} AND employer_id = ${employer_id}`;
+
+    if (result.count === 0) {
+      return res
+        .status(404)
+        .json({ message: "Job not found or you're not authorized" });
+    }
 
     res.status(200).json({
       message: "Job updated successfully",
@@ -63,12 +96,32 @@ export const updateJob = async (req, res) => {
 
 //delete job
 export const deleteJob = async (req, res) => {
-  const employer_id = req.employerId;
-  const job_id = req.params.job_id;
 
   try {
-    // Delete job
-    await sql`DELETE FROM jobs WHERE id = ${job_id} AND employer_id = ${employer_id}`;
+    const user_id = req.userId;
+    const job_id = req.params.job_id;
+
+    // Find employer_id using user_id
+    const employer = await sql`SELECT employer_id FROM employers WHERE user_id = ${user_id}`;
+    if (employer.length === 0) {
+      return res.status(404).json({
+        message: "Employer not found",
+      });
+    }
+    const employer_id = employer[0].employer_id;
+
+    // Delete job and get result
+    const result = await sql`
+      DELETE FROM jobs
+      WHERE job_id = ${job_id} AND employer_id = ${employer_id}
+    `;
+
+    // Check if any row was deleted
+    if (result.count === 0) {
+      return res.status(404).json({
+        message: "Job not found or you're not authorized to delete it",
+      });
+    }
 
     res.status(200).json({
       message: "Job deleted successfully",
@@ -77,16 +130,22 @@ export const deleteJob = async (req, res) => {
     console.error("Error in deleteJob:", error.message);
     res.status(500).json({
       message: "Server error",
-      error: error.message,
     });
   }
-}
+};
+
 
 //get all jobs
 export const getAllJobs = async (req, res) => {
   try {
-    // Get all jobs
-    const jobs = await sql`SELECT * FROM jobs`;
+    const jobs = await sql`
+      SELECT 
+        jobs.job_id, jobs.job_title, jobs.job_description, jobs.location, 
+        jobs.salary_range, jobs.job_type, jobs.employer_id,
+        employers.company_logo
+      FROM jobs
+      JOIN employers ON jobs.employer_id = employers.employer_id
+    `;
 
     res.status(200).json({
       message: "Jobs fetched successfully",
@@ -96,18 +155,24 @@ export const getAllJobs = async (req, res) => {
     console.error("Error in getAllJobs:", error.message);
     res.status(500).json({
       message: "Server error",
-      error: error.message,
     });
   }
-}
+};
 
 //get job by id
 export const getJobById = async (req, res) => {
   const job_id = req.params.job_id;
 
   try {
-    // Get job by id
-    const job = await sql`SELECT * FROM jobs WHERE id = ${job_id}`;
+    const job = await sql`
+      SELECT 
+        jobs.job_id, jobs.job_title, jobs.job_description, jobs.location, 
+        jobs.salary_range, jobs.job_type, jobs.employer_id,
+        employers.company_logo
+      FROM jobs
+      JOIN employers ON jobs.employer_id = employers.employer_id
+      WHERE jobs.job_id = ${job_id}
+    `;
 
     if (job.length === 0) {
       return res.status(404).json({
@@ -123,7 +188,6 @@ export const getJobById = async (req, res) => {
     console.error("Error in getJobById:", error.message);
     res.status(500).json({
       message: "Server error",
-      error: error.message,
     });
   }
-}
+};

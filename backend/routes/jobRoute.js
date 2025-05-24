@@ -5,10 +5,12 @@ import { createJob, deleteJob, getAllJobs, getJobById, updateJob } from "../cont
 
 const router = express.Router();
 
-router.post("/", isEmployer, createJob);
-router.put("/:job_id", isEmployer, updateJob);
-router.delete("/:job_id", isEmployer, deleteJob);
-router.get("/", isEmployer, getAllJobs);
-router.get("/:job_id", isEmployer, getJobById); // Assuming you want to get a job by ID
+router.post("/create", isEmployer, createJob);
+router.put("/update/:job_id", isEmployer, updateJob);
+router.delete("/delete/:job_id", isEmployer, deleteJob);
+
+
+router.get("/all-jobs", getAllJobs);
+router.get("/:job_id", getJobById);
 
 export default router;

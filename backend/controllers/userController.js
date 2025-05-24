@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { sql } from "../lib/db.js";
+import { sql } from "./lib/db.js";
 dotenv.config();
 
 export const register = async (req, res) => {
@@ -39,46 +39,50 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-    try {
-        //Validate request body
-        const { email, password } = req.body;
-        
-        if (!email ||!password) {
-            return res.status(400).json({ message: "Please enter all fields" });
-        }
-        
-        // Check if user exists
-        const user = await sql`SELECT * FROM users WHERE email = ${email}`;
-        if (user.length === 0) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-        
-        // Check if password is correct
-        const isMatch = await bcrypt.compare(password, user[0].password_hash);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
+  try {
+    //Validate request body
+    const { email, password } = req.body;
 
-        // Create and send JWT token
-        const token = jwt.sign({ userId: user[0].user_id, role: user[0].role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-        //set token in cookies
-        res.cookie('token', token,{
-            httpOnly: true,
-            sameSite: 'strict', // CSRF protection
-        });
-        
-        res.json({user : user[0], message: "Logged in successfully"})
-        
-    } catch (error) {
-        console.error("Error in login:", error.message);
-        res.status(500).json({
-            message: "Server error",
-            error: error.message,
-        });
+    if (!email || !password) {
+      return res.status(400).json({ message: "Please enter all fields" });
     }
-};
 
+    // Check if user exists
+    const user = await sql`SELECT * FROM users WHERE email = ${email}`;
+    if (user.length === 0) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Check if password is correct
+    const isMatch = await bcrypt.compare(password, user[0].password_hash);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Create and send JWT token
+    const token = jwt.sign(
+      { userId: user[0].user_id, role: user[0].role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    //set token in cookies
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Use 'none' if production and frontend hosted on different domain
+      secure: process.env.NODE_ENV === "production", // secure true only in production (HTTPS)
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    res.json({ user: user[0], message: "Logged in successfully" });
+  } catch (error) {
+    console.error("Error in login:", error.message);
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
 
 export const logout = async (req, res) => {
   try {
@@ -95,7 +99,6 @@ export const logout = async (req, res) => {
   }
 };
 
-
 export const getProfile = async (req, res) => {
   try {
     // Get user ID from request
@@ -108,7 +111,7 @@ export const getProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({user : user[0], message: "Profile fetched successfully"});
+    res.json({ user: user[0], message: "Profile fetched successfully" });
   } catch (error) {
     console.error("Error in getProfile:", error.message);
     res.status(500).json({
@@ -145,8 +148,7 @@ export const updateProfile = async (req, res) => {
       error: error.message,
     });
   }
-}
-
+};
 
 export const deleteProfile = async (req, res) => {
   try {
