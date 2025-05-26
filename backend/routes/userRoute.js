@@ -7,7 +7,7 @@ import { isAuth } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/me", isAuth, getUser);
-router.put("/me", isAuth, updateUser);
+router.get("/my-profile", isAuth, getUser);
+router.put("/update-profile", isAuth, updateUser);
 
 export default router;

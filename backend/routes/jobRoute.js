@@ -11,16 +11,15 @@ import {
 
 const router = express.Router();
 
-//static routes for employer to get their jobs
-router.get("/me", isEmployer, getMyJobs);
 
 // Public routes
-router.get("/", getAllJobs);
+router.get("/all-jobs", getAllJobs);
 router.get("/:job_id", getJobById);
 
 // Protected employer routes
-router.post("/", isEmployer, createJob);
-router.put("/:job_id", isEmployer, updateJob);
-router.delete("/:job_id", isEmployer, deleteJob);
+router.get("/my-jobs", isEmployer, getMyJobs);
+router.post("/create-job", isEmployer, createJob);
+router.put("/update-job/:job_id", isEmployer, updateJob);
+router.delete("/delete-job/:job_id", isEmployer, deleteJob);
 
 export default router;
