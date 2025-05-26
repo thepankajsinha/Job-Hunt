@@ -2,16 +2,17 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import {connectDB} from "./lib/db.js";
+import {connectDB} from "./lib/db.js"; 
 dotenv.config();
 
 const app = express();
 
-//import port from env
+//import port from env  
 const PORT = process.env.PORT || 5000;
 
 
 //import routes
+import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import employerRoute from "./routes/employerRoute.js";
 import jobRoute from "./routes/jobRoute.js";
@@ -30,9 +31,10 @@ app.use(
 
 
 //use routes
+app.use("/auth", authRoute);
 app.use("/user", userRoute);
 app.use("/employer", employerRoute);
-app.use("/job", jobRoute);
+app.use("/jobs", jobRoute);
 
 
 //start server

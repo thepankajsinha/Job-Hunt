@@ -5,8 +5,8 @@ import { createEmployer, getEmployer, updateEmployer } from "../controllers/empl
 
 const router = express.Router();
 
+router.post("/", isEmployer, createEmployer);
 router.get("/me", isEmployer, getEmployer);
-router.post("/create", isEmployer, createEmployer);
-router.put("/update",isEmployer, updateEmployer);
+router.put("/me",isEmployer, updateEmployer);
 
 export default router;

@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { sql } from "./lib/db.js";
+import { sql } from "../lib/db.js";
 dotenv.config();
 
 export const createEmployer = async (req, res) => {
@@ -33,14 +33,16 @@ export const getEmployer = async (req, res) => {
   const user_id = req.userId;
 
   try {
-    const employer =
+    const result =
       await sql`SELECT * FROM employers WHERE user_id = ${user_id}`;
 
-    if (employer.length === 0) {
-      return res.status(200).json({ employer: null });
+    const employer = result[0];
+
+    if (result.length === 0) {
+      return res.status(200).json({ message: "Employer not found" });
     }
 
-    res.status(200).json({ employer: employer[0] });
+    res.status(200).json({ employer});
   } catch (error) {
     console.error("Error fetching employer:", error);
     res.status(500).json({ message: "Internal server error" });

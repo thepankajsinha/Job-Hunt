@@ -31,12 +31,6 @@ export default function Navbar() {
           >
             Find jobs
           </Link>
-          <Link
-            to="/"
-            className="text-gray-700 hover:text-blue-600 font-medium"
-          >
-            About
-          </Link>
 
           {!loading && isAuthenticated && user?.role === "job_seeker" && (
             <>
@@ -73,13 +67,19 @@ export default function Navbar() {
                 to="/create-company"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
-                Create Company
+                My Company
               </Link>
               <Link
                 to="/create-job"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
                 Create Job
+              </Link>
+              <Link
+                to="/employer-jobs"
+                className="text-gray-700 hover:text-blue-600 font-medium"
+              >
+                My jobs
               </Link>
               <Link
                 to="/applications"

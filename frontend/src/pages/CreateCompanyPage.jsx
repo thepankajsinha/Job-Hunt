@@ -49,11 +49,11 @@ export default function CreateCompanyPage() {
 
     try {
       if (isEditing) {
-        await api.put("/employer/update", company);
-        alert("Company updated successfully.");
+        const res = await api.put("/employer/update", company);
+        alert(res.data.message);
       } else {
-        await api.post("/employer/create", company);
-        alert("Company created successfully.");
+        const res = await api.post("/employer/create", company);
+        alert(res.data.message);
         setIsEditing(true);
       }
     } catch (err) {
@@ -87,7 +87,7 @@ export default function CreateCompanyPage() {
         />
         <input
           type="url"
-          placeholder="Company Website"
+          placeholder="Company Website URL"
           value={companyWebsite}
           onChange={(e) => setCompanyWebsite(e.target.value)}
           className="w-full p-2 border rounded-lg"
@@ -99,6 +99,7 @@ export default function CreateCompanyPage() {
           onChange={(e) => setCompanyLogo(e.target.value)}
           className="w-full p-2 border rounded-lg"
         />
+
 
         <button
           type="submit"

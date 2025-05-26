@@ -20,6 +20,7 @@ export const isAuth = async (req, res, next) => {
   }
 };
 
+
 export const isEmployer = async (req, res, next) => {
   try {
     const token = req.cookies.token;
