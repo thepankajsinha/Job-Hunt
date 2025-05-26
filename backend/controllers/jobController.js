@@ -1,6 +1,5 @@
 import { sql } from "../lib/db.js";
 
-
 export const createJob = async (req, res) => {
   try {
     const user_id = req.userId;
@@ -141,10 +140,7 @@ export const deleteJob = async (req, res) => {
 export const getAllJobs = async (req, res) => {
   try {
     const jobs = await sql`
-      SELECT 
-        j.job_id, j.job_title, j.job_description, j.location, 
-        j.salary_range, j.job_type,
-        e.company_logo, e.company_name
+      SELECT *
       FROM jobs j
       JOIN employers e ON j.employer_id = e.employer_id
     `;
@@ -169,10 +165,7 @@ export const getJobById = async (req, res) => {
     const job_id = req.params.job_id;
 
     const result = await sql`
-      SELECT 
-        j.job_id, j.job_title, j.job_description, j.location, 
-        j.salary_range, j.job_type,
-        e.company_logo, e.company_name
+      SELECT *
       FROM jobs j
       JOIN employers e ON j.employer_id = e.employer_id
       WHERE j.job_id = ${job_id}
@@ -216,9 +209,7 @@ export const getMyJobs = async (req, res) => {
     const employer_id = employer.employer_id;
 
     const jobs = await sql`
-      SELECT 
-        job_id, job_title, job_description, location, 
-        salary_range, job_type
+      SELECT *
       FROM jobs
       WHERE employer_id = ${employer_id}
       ORDER BY job_id DESC
