@@ -1,5 +1,6 @@
 import { sql } from "../lib/db.js";
 
+
 export const createJob = async (req, res) => {
   try {
     const user_id = req.userId;
@@ -163,9 +164,10 @@ export const getAllJobs = async (req, res) => {
 };
 
 export const getJobById = async (req, res) => {
-  const job_id = req.params.job_id;
-
+  
   try {
+    const job_id = req.params.job_id;
+
     const result = await sql`
       SELECT 
         j.job_id, j.job_title, j.job_description, j.location, 
@@ -227,7 +229,7 @@ export const getMyJobs = async (req, res) => {
       data: jobs,
     });
   } catch (error) {
-    console.error("Error in getJobsByCurrentEmployer:", error.message);
+    console.error("Error in getMyJobs:", error.message);
     res.status(500).json({
       message: "Server error",
     });
