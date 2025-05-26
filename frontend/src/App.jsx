@@ -7,6 +7,7 @@ import { useAuth } from "./context/AuthContext";
 import CreateCompanyPage from "./pages/CreateCompanyPage";
 import CreateJobPage from "./pages/CreateJobPage";
 import EmployerAllJobPage from "./pages/EmployerAllJobPage";
+import MyProfilePage from "./pages/MyProfilePage";
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/create-company" element={<CreateCompanyPage />} />
         <Route path="/create-job" element={<CreateJobPage />} />
         <Route path="/employer-jobs" element={<EmployerAllJobPage />} />
+        <Route path="/my-profile" element={<MyProfilePage />} />
       </Routes>
     </>
   );

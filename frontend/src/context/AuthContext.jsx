@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await api.get("/user/profile/me");
+        const res = await api.get("/user/my-profile");
         setUser(res.data.user);
         setIsAuthenticated(true);
       } catch (err) {
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await api.post("/user/login", { email, password });
+      const res = await api.post("/auth/login", { email, password });
       setUser(res.data.user);
       setIsAuthenticated(true);
       alert(res.data.message);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password, role) => {
     try {
-      const res = await api.post("/user/signup", { name, email, password, role });
+      const res = await api.post("/auth/signup", { name, email, password, role });
       alert(res.data.message);
     } catch (err) {
       const errorMessage = err.response?.data?.message;
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const res = await api.post("/user/logout");
+      const res = await api.post("/auth/logout");
       setUser(null);
       setIsAuthenticated(false);
       alert(res.data.message);
@@ -58,11 +58,21 @@ export const AuthProvider = ({ children }) => {
       alert(errorMessage);
     }
   };
+
+  const updateProfile = async (name, email, password) => {
+    try {
+      const res = await api.put("/user/update-profile", { name, email, password });
+      alert(res.data.message);
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Failed to update profile";
+      alert(errorMessage);
+    }
+  };
   
 
   return (
     <AuthContext.Provider
-      value={{ signup, login, user, logout, loading, isAuthenticated }}
+      value={{ signup, login, user, logout, loading, isAuthenticated , updateProfile}}
     >
       {children}
     </AuthContext.Provider>

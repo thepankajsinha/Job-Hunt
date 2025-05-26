@@ -35,7 +35,7 @@ export default function Navbar() {
           {!loading && isAuthenticated && user?.role === "job_seeker" && (
             <>
               <Link
-                to="/profile"
+                to="/my-profile"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
                 My Profile
