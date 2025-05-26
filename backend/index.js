@@ -16,6 +16,7 @@ import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import employerRoute from "./routes/employerRoute.js";
 import jobRoute from "./routes/jobRoute.js";
+import applicationRoute from "./routes/applicationRoute.js";
 
 
 //Inbuilt middlewares
@@ -35,6 +36,7 @@ app.use("/auth", authRoute);
 app.use("/user", userRoute);
 app.use("/employer", employerRoute);
 app.use("/jobs", jobRoute);
+app.use("/applications", applicationRoute);
 
 
 //start server
