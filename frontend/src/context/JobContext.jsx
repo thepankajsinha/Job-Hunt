@@ -13,22 +13,23 @@ export const JobProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await api.get("/jobs/all-jobs");
-      setJobs(res.data.jobs); // assuming jobs are in res.data.data
+      setJobs(res.data.data); // 👈 fix here
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch jobs.");
+      console.error(err.response?.data?.message || "Failed to fetch jobs.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Get job by ID
   const getJobById = async (job_id) => {
     setLoading(true);
     try {
       const res = await api.get(`/jobs/${job_id}`);
-      setJobDetails(res.data.job);
+      setJobDetails(res.data.data);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch job.");
+      alert(err.response?.data?.message || "Failed to fetch job.");
     } finally {
       setLoading(false);
     }

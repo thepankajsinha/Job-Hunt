@@ -10,45 +10,43 @@ export default function Navbar() {
     navigate("/");
   };
 
-
   return (
-    <nav className="bg-white shadow-md px-6 py-4">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <nav className="bg-white shadow-sm border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
-        <div className="text-xl font-bold text-blue-600">JobWalla</div>
+        <Link
+          to="/"
+          className="text-2xl font-bold text-black hover:text-gray-800"
+        >
+          JobWalla
+        </Link>
 
-        {/* Navigation Links */}
-        <div className="hidden md:flex space-x-6">
+        {/* Links */}
+        <div className="hidden md:flex gap-6 items-center">
           <Link
             to="/"
-            className="text-gray-700 hover:text-blue-600 font-medium"
+            className="text-gray-700 hover:text-black text-sm font-medium"
           >
             Home
           </Link>
           <Link
-            to="/"
-            className="text-gray-700 hover:text-blue-600 font-medium"
+            to="/all-jobs"
+            className="text-gray-700 hover:text-black text-sm font-medium"
           >
-            Find jobs
+            Find Jobs
           </Link>
 
           {!loading && isAuthenticated && user?.role === "job_seeker" && (
             <>
               <Link
                 to="/my-profile"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-gray-700 hover:text-black text-sm font-medium"
               >
                 My Profile
               </Link>
               <Link
-                to="/edit-profile"
-                className="text-gray-700 hover:text-blue-600 font-medium"
-              >
-                Edit Profile
-              </Link>
-              <Link
                 to="/applied-jobs"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-gray-700 hover:text-black text-sm font-medium"
               >
                 My Applied Jobs
               </Link>
@@ -59,31 +57,31 @@ export default function Navbar() {
             <>
               <Link
                 to="/profile"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-gray-700 hover:text-black text-sm font-medium"
               >
                 My Profile
               </Link>
               <Link
                 to="/create-company"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-gray-700 hover:text-black text-sm font-medium"
               >
                 My Company
               </Link>
               <Link
                 to="/create-job"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-gray-700 hover:text-black text-sm font-medium"
               >
                 Create Job
               </Link>
               <Link
                 to="/employer-jobs"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-gray-700 hover:text-black text-sm font-medium"
               >
-                My jobs
+                My Jobs
               </Link>
               <Link
                 to="/applications"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-gray-700 hover:text-black text-sm font-medium"
               >
                 View Applications
               </Link>
@@ -92,11 +90,11 @@ export default function Navbar() {
         </div>
 
         {/* Auth Buttons */}
-        <div className="hidden md:flex space-x-4">
+        <div className="hidden md:flex gap-3">
           {!loading && isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+              className="bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-900"
             >
               Logout
             </button>
@@ -105,13 +103,13 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  className="bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-900"
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
-                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                  className="bg-gray-800 text-white text-sm px-4 py-2 rounded-md hover:bg-gray-900"
                 >
                   Sign Up
                 </Link>

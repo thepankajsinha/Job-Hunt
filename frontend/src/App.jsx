@@ -8,6 +8,9 @@ import CreateCompanyPage from "./pages/CreateCompanyPage";
 import CreateJobPage from "./pages/CreateJobPage";
 import EmployerAllJobPage from "./pages/EmployerAllJobPage";
 import MyProfilePage from "./pages/MyProfilePage";
+import AppliedJobsPage from "./pages/AppliedJobsPage";
+import AllJobsPage from "./pages/AllJobsPage";
+import JobDetailPage from "./pages/JobDetailPage";
 
 function App() {
 
@@ -24,6 +27,9 @@ function App() {
         <Route path="/create-job" element={<CreateJobPage />} />
         <Route path="/employer-jobs" element={<EmployerAllJobPage />} />
         <Route path="/my-profile" element={<MyProfilePage />} />
+        <Route path="/applied-jobs" element={<AppliedJobsPage />} />
+        <Route path="/all-jobs" element={<AllJobsPage />} />
+        <Route path="/jobs/:id" element={<JobDetailPage />} />
       </Routes>
     </>
   );

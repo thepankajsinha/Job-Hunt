@@ -1,101 +1,76 @@
-import React, { useState } from "react";
-import JobCard from "../components/JobCard";
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useJob } from "../context/JobContext";
 
-export default function HomePage() {
-  const [filters, setFilters] = useState({
-    keyword: "",
-    location: "",
-    type: "",
-  });
+const HomePage = () => {
+  const { jobs, getAllJobs, loading } = useJob();
 
-  const jobs = [
-    {
-      id: 1,
-      title: "Software Engineer (Android), Libraries",
-      company: "Segment",
-      location: "London, UK",
-      posted: "11 hours ago",
-      salary: "$35k - $45k",
-      logo: "https://logo.clearbit.com/segment.com",
-      type: "Full Time",
-      visibility: "Private",
-      urgent: true,
-    },
-    {
-      id: 2,
-      title: "Frontend Developer",
-      company: "TechNova",
-      location: "Delhi",
-      posted: "2 days ago",
-      salary: "$20k - $30k",
-      logo: "https://logo.clearbit.com/technova.com",
-      type: "Part Time",
-      visibility: "Public",
-      urgent: false,
-    },
-  ];
-
-  const filteredJobs = jobs.filter(
-    (job) =>
-      job.title.toLowerCase().includes(filters.keyword.toLowerCase()) &&
-      job.location.toLowerCase().includes(filters.location.toLowerCase()) &&
-      (filters.type === "" || job.type === filters.type)
-  );
+  useEffect(() => {
+    getAllJobs();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Hero Section */}
-      <div className="bg-blue-600 text-white py-16 px-6 text-center">
-        <h1 className="text-4xl font-bold mb-4">Find Your Dream Job</h1>
-        <p className="text-lg">
-          Search jobs that match your skills and passion
-        </p>
-      </div>
-
-      {/* Filter Section */}
-      <div className="max-w-6xl mx-auto px-4 mt-[-40px] z-10 relative">
-        <div className="bg-white p-6 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input
-            type="text"
-            placeholder="Search by keyword"
-            className="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500"
-            value={filters.keyword}
-            onChange={(e) =>
-              setFilters({ ...filters, keyword: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Location"
-            className="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500"
-            value={filters.location}
-            onChange={(e) =>
-              setFilters({ ...filters, location: e.target.value })
-            }
-          />
-          <select
-            className="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500"
-            value={filters.type}
-            onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-          >
-            <option value="">All Types</option>
-            <option value="Full Time">Full Time</option>
-            <option value="Part Time">Part Time</option>
-            <option value="Remote">Remote</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Job List */}
-      <div className="max-w-6xl mx-auto px-4 py-10 space-y-6">
-        {filteredJobs.length > 0 ? (
-          filteredJobs.map((job) => <JobCard key={job.id} job={job} />)
-        ) : (
-          <p className="text-gray-500 text-center">
-            No jobs match your filters.
+    <div className="min-h-screen bg-white py-10 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Hero Section */}
+        <div className="text-center mb-15">
+          <h1 className="text-6xl font-bold text-black mb-4">
+            Find Your Dream Job
+          </h1>
+          <p className="text-gray-600 text-xl">
+            Explore top opportunities and apply with one click.
           </p>
-        )}
+          <Link to="/all-jobs">
+            <button className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-gray-900 transition">
+              Browse All Jobs
+            </button>
+          </Link>
+        </div>
+
+        {/* Job Listings */}
+        <div className="space-y-6">
+          {loading ? (
+            <p className="text-center text-gray-600">Loading jobs...</p>
+          ) : jobs.length === 0 ? (
+            <p className="text-center text-gray-500">No jobs found.</p>
+          ) : (
+            jobs.slice(0, 6).map((job) => (
+              <div
+                key={job.job_id}
+                className="border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+              >
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                  <div className="flex items-start gap-4">
+                    <img
+                      src={job.company_logo}
+                      alt={job.company_name}
+                      className="w-14 h-14 object-contain"
+                    />
+                    <div>
+                      <h2 className="text-lg font-semibold text-black">
+                        {job.job_title}
+                      </h2>
+                      <p className="text-gray-700">
+                        {job.company_name} • {job.location}
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        {job.job_type} • {job.salary_range}
+                      </p>
+                    </div>
+                  </div>
+                  <Link to={`/job/${job.job_id}`}>
+                    <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 text-sm">
+                      View / Apply
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default HomePage;
