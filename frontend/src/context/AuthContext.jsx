@@ -5,18 +5,16 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
+      setLoading(true);
       try {
-        const res = await api.get("/user/my-profile");
-        setUser(res.data.user);
-        setIsAuthenticated(true);
+        const res = await api.get("/auth/me");
+        setUser(res.data.data);
       } catch (err) {
         setUser(null);
-        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
@@ -24,61 +22,103 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const registerApplicant = async (firstName, lastName, profileSummary, skills, resumeUrl, email, password) => {
+  const registerApplicant = async ({
+    first_name,
+    last_name,
+    profile_summary,
+    resume_url,
+    skills,
+    email,
+    password,
+  }) => {
+    setLoading(true);
     try {
       const res = await api.post("/auth/register/applicant", {
-        firstName,
-        lastName,
-        profileSummary,
+        first_name,
+        last_name,
+        profile_summary,
+        resume_url,
         skills,
-        resumeUrl,
         email,
-        password
+        password,
+      });
+      alert(res.data.message);
+    } catch (err) {
+      const errorMessage = err.response?.data?.message;
+      alert(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const registerEmployer = async ({
+    name,
+    description,
+    website_url,
+    logo_url,
+    industry, 
+    email,
+    password,
+  }) => {
+    setLoading(true);
+    try {
+      const res = await api.post("/auth/register/employer", {
+        name,
+        description,
+        website_url,
+        logo_url,
+        industry,
+        email,
+        password,
       });
       alert(res.data.message);
     } catch (err) {
       const errorMessage = err.response?.data?.message;
       alert(errorMessage);
     }
-  };
-
-  const login = async (email, password) => {
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      setUser(res.data.user);
-      setIsAuthenticated(true);
-      alert(res.data.message);
-    } catch (err) {
-      const errorMessage = err.response?.data?.message;
-      alert(errorMessage);
+    finally {
+      setLoading(false);
     }
   };
 
-  const signup = async (name, email, password, role) => {
+  const login = async (email, password) => {
+    setLoading(true);
     try {
-      const res = await api.post("/auth/signup", { name, email, password, role });
+      const res = await api.post("/auth/login", { email, password });
+      setUser(res.data.data);
       alert(res.data.message);
     } catch (err) {
       const errorMessage = err.response?.data?.message;
       alert(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
+    setLoading(true);
     try {
       const res = await api.post("/auth/logout");
       setUser(null);
-      setIsAuthenticated(false);
       alert(res.data.message);
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Logout failed";
       alert(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <AuthContext.Provider
-      value={{ registerApplicant ,signup, login, user, logout, loading, isAuthenticated}}
+      value={{
+        registerApplicant,
+        registerEmployer,
+        login,
+        logout,
+        user,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -28,11 +28,11 @@ export default function RegisterApplicant() {
     }
 
     await registerApplicant({
-      firstName,
-      lastName,
-      profileSummary,
+      first_name: firstName,
+      last_name: lastName,
+      profile_summary: profileSummary,
+      resume_url: resumeUrl,
       skills,
-      resumeUrl,
       email,
       password
     });
@@ -73,6 +73,7 @@ export default function RegisterApplicant() {
         <div>
           <label className="block text-black mb-1">Profile Summary</label>
           <textarea
+            type="text"
             required
             placeholder="Write a brief summary about your experience, goals, and skills"
             value={profileSummary}

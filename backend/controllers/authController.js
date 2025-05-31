@@ -28,7 +28,11 @@ export const registerApplicant = async (req, res) => {
     `;
 
     //get the user_id from the result
-    const userId = result[0].user_id;
+    if (result.length === 0) {
+      return res.status(500).json({ message: "Failed to create user" });
+    }
+
+    const userId = result[0]?.user_id;
 
     
     //then insert into applicants table
@@ -146,5 +150,30 @@ export const logout = async (req, res) => {
       message: "Server error",
       error: error.message,
     });
+  }
+};
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: No token provided" });
+    }
+
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Directly return decoded data (contains userId and role)
+    const { userId, role } = decoded;
+
+    res.status(200).json({
+      data: { userId, role },
+    });
+  } catch (error) {
+    console.error("Error in getCurrentUser:", error.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };

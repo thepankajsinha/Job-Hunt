@@ -2,7 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout, loading } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -21,85 +21,75 @@ export default function Navbar() {
           JobWalla
         </Link>
 
-        {/* Links */}
-        <div className="hidden md:flex gap-6 items-center">
-          <Link
-            to="/"
-            className="text-gray-700 hover:text-black text-sm font-medium"
-          >
-            Home
-          </Link>
-          <Link
-            to="/all-jobs"
-            className="text-gray-700 hover:text-black text-sm font-medium"
-          >
-            Find Jobs
-          </Link>
+        {/* Main Navigation */}
+        {!loading && (
+          <div className="hidden md:flex gap-6 items-center">
+            <Link
+              to="/"
+              className="text-gray-700 hover:text-black text-sm font-medium"
+            >
+              Home
+            </Link>
+            <Link
+              to="/all-jobs"
+              className="text-gray-700 hover:text-black text-sm font-medium"
+            >
+              Find Jobs
+            </Link>
 
-          {!loading && isAuthenticated && user?.role === "job_seeker" && (
-            <>
-              <Link
-                to="/my-profile"
-                className="text-gray-700 hover:text-black text-sm font-medium"
-              >
-                My Profile
-              </Link>
-              <Link
-                to="/applied-jobs"
-                className="text-gray-700 hover:text-black text-sm font-medium"
-              >
-                My Applied Jobs
-              </Link>
-            </>
-          )}
+            {user?.role === "job_seeker" && (
+              <>
+                <Link
+                  to="/my-profile"
+                  className="text-gray-700 hover:text-black text-sm font-medium"
+                >
+                  My Profile
+                </Link>
+                <Link
+                  to="/applied-jobs"
+                  className="text-gray-700 hover:text-black text-sm font-medium"
+                >
+                  Applied Jobs
+                </Link>
+              </>
+            )}
 
-          {!loading && isAuthenticated && user?.role === "employer" && (
-            <>
-              <Link
-                to="/profile"
-                className="text-gray-700 hover:text-black text-sm font-medium"
-              >
-                My Profile
-              </Link>
-              <Link
-                to="/create-company"
-                className="text-gray-700 hover:text-black text-sm font-medium"
-              >
-                My Company
-              </Link>
-              <Link
-                to="/create-job"
-                className="text-gray-700 hover:text-black text-sm font-medium"
-              >
-                Create Job
-              </Link>
-              <Link
-                to="/employer-jobs"
-                className="text-gray-700 hover:text-black text-sm font-medium"
-              >
-                My Jobs
-              </Link>
-              <Link
-                to="/applications"
-                className="text-gray-700 hover:text-black text-sm font-medium"
-              >
-                View Applications
-              </Link>
-            </>
-          )}
-        </div>
+            {user?.role === "employer" && (
+              <>
+                <Link
+                  to="/my-profile"
+                  className="text-gray-700 hover:text-black text-sm font-medium"
+                >
+                  My Profile
+                </Link>
+                <Link
+                  to="/create-job"
+                  className="text-gray-700 hover:text-black text-sm font-medium"
+                >
+                  Create Job
+                </Link>
+                <Link
+                  to="/employer-jobs"
+                  className="text-gray-700 hover:text-black text-sm font-medium"
+                >
+                  My Jobs
+                </Link>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Auth Buttons */}
-        <div className="hidden md:flex gap-3">
-          {!loading && isAuthenticated ? (
-            <button
-              onClick={handleLogout}
-              className="bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-900"
-            >
-              Logout
-            </button>
-          ) : (
-            !loading && (
+        {!loading && (
+          <div className="hidden md:flex gap-3">
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-900"
+              >
+                Logout
+              </button>
+            ) : (
               <>
                 <Link
                   to="/login"
@@ -120,9 +110,9 @@ export default function Navbar() {
                   Employer
                 </Link>
               </>
-            )
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </nav>
   );
