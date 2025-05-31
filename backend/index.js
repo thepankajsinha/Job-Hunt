@@ -17,7 +17,6 @@ import applicantRoute from "./routes/applicantRoute.js";
 import employerRoute from "./routes/employerRoute.js";
 import jobRoute from "./routes/jobRoute.js";
 import applicationRoute from "./routes/applicationRoute.js";
-import bookmarkRoute from "./routes/bookmarkRoute.js";
 
 
 //Inbuilt middlewares
@@ -38,7 +37,6 @@ app.use("/applicant", applicantRoute);
 app.use("/employer", employerRoute);
 app.use("/job", jobRoute);
 app.use("/application", applicationRoute);
-app.use("/bookmark", bookmarkRoute);
 
 
 //start server

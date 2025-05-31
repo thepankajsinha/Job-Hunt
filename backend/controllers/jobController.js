@@ -3,20 +3,19 @@ import { sql } from "../lib/db.js";
 // Create a new job
 export const createJob = async (req, res) => {
   try {
-    const employer_id = req.employerId; // Assuming employerId is set by the isEmployer middleware
+    const employer_id = req.employerId;
 
     const { job_title, job_description, job_location, salary_range, job_type } =
       req.body;
 
     // Create job
     const newJob = await sql`
-      INSERT INTO jobs (job_title, job_description, location, salary_range, job_type, employer_id)
+      INSERT INTO jobs (job_title, job_description, job_location, salary_range, job_type, employer_id)
       VALUES (${job_title}, ${job_description}, ${job_location}, ${salary_range}, ${job_type}, ${employer_id})
       RETURNING *
     `;
     res.status(201).json({
-      message: "Job created successfully",
-      data: newJob[0],
+      message: "Job created successfully"
     });
   } catch (error) {
     console.error("Error in createJob controller:", error.message);
@@ -26,6 +25,7 @@ export const createJob = async (req, res) => {
     });
   }
 };
+
 
 // Update job details
 export const updateJob = async (req, res) => {
@@ -39,7 +39,7 @@ export const updateJob = async (req, res) => {
     // Update job
     const updatedJob = await sql`
       UPDATE jobs
-      SET job_title = ${job_title}, job_description = ${job_description}, location = ${job_location}, salary_range = ${salary_range}, job_type = ${job_type}
+      SET job_title = ${job_title}, job_description = ${job_description}, job_location = ${job_location}, salary_range = ${salary_range}, job_type = ${job_type}
       WHERE job_id = ${job_id} AND employer_id = ${employer_id}
       RETURNING *
     `;
@@ -52,7 +52,6 @@ export const updateJob = async (req, res) => {
 
     res.status(200).json({
       message: "Job updated successfully",
-      data: updatedJob[0],
     });
   } catch (error) {
     console.error("Error in updateJob controller:", error.message);
@@ -88,7 +87,7 @@ export const deleteJob = async (req, res) => {
 export const getAllJobs = async (req, res) => {
   try {
     const jobs = await sql`
-      SELECT j.*, e.employer_name, e.company_logo
+      SELECT j.*, e.name, e.logo_url
       FROM jobs j
       JOIN employers e ON j.employer_id = e.employer_id
       ORDER BY j.job_id DESC
@@ -106,13 +105,14 @@ export const getAllJobs = async (req, res) => {
   }
 };
 
+
 // Get a job by its ID with employer details
 export const getJobById = async (req, res) => {
   try {
     const job_id = req.params.job_id;
 
     const job = await sql`
-      SELECT j.*, e.employer_name, e.company_logo
+      SELECT j.*, e.name, e.logo_url
       FROM jobs j
       JOIN employers e ON j.employer_id = e.employer_id
       WHERE j.job_id = ${job_id}
@@ -142,7 +142,7 @@ export const getEmployerJobs = async (req, res) => {
     const employer_id = req.employerId;
 
     const jobs = await sql`
-      SELECT j.*, e.employer_name, e.company_logo
+      SELECT j.*, e.name, e.logo_url
       FROM jobs j
       JOIN employers e ON j.employer_id = e.employer_id
       WHERE j.employer_id = ${employer_id}
