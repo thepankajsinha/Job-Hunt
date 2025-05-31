@@ -1,12 +1,17 @@
 import { useState } from "react";
 
-export default function RegisterCompany() {
-  const [companyName, setCompanyName] = useState("");
+export default function RegisterEmployer() {
+  // User table fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [website, setWebsite] = useState("");
-  const [logo, setLogo] = useState(null);
+
+  // Employer table fields
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [industry, setIndustry] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,16 +21,25 @@ export default function RegisterCompany() {
       return;
     }
 
-    const formData = {
-      companyName,
+    const password_hash = password;
+
+    const userData = {
       email,
-      password,
-      website,
-      logo,
+      password_hash,
+      role: "employer",
     };
 
-    console.log(formData);
-    alert("Company registered successfully!");
+    const employerData = {
+      name,
+      description,
+      website_url: websiteUrl,
+      logo_url: logoUrl,
+      industry,
+    };
+
+    console.log("User Table Data:", userData);
+    console.log("Employer Table Data:", employerData);
+    alert("Employer registered successfully!");
   };
 
   return (
@@ -34,24 +48,13 @@ export default function RegisterCompany() {
         Register as Employer
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-black mb-1">Company Name</label>
-          <input
-            type="text"
-            name="companyName"
-            required
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
-          />
-        </div>
-
+        {/* User Table Inputs */}
         <div>
           <label className="block text-black mb-1">Email</label>
           <input
             type="email"
-            name="email"
             required
+            placeholder="your@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
@@ -62,8 +65,8 @@ export default function RegisterCompany() {
           <label className="block text-black mb-1">Password</label>
           <input
             type="password"
-            name="password"
             required
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
@@ -73,34 +76,72 @@ export default function RegisterCompany() {
         <div>
           <label className="block text-black mb-1">Confirm Password</label>
           <input
-            type="password"
-            name="confirmPassword"
+            type="text"
             required
+            placeholder="Re-enter password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
           />
         </div>
 
+        {/* Employer Table Inputs */}
         <div>
-          <label className="block text-black mb-1">Website (optional)</label>
+          <label className="block text-black mb-1">Company Name</label>
           <input
-            type="url"
-            name="website"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
+            type="text"
+            required
+            placeholder="e.g., TechCorp Pvt Ltd"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-black mb-1">Company Logo</label>
+          <label className="block text-black mb-1">Company Description</label>
+          <textarea
+            required
+            placeholder="Brief company description (max 255 characters)"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-black mb-1">Website URL</label>
           <input
-            type="file"
-            name="logo"
-            accept=".png,.jpg,.jpeg"
-            onChange={(e) => setLogo(e.target.files[0])}
-            className="w-full border border-black px-4 py-2 rounded-md focus:outline-none bg-white"
+            type="url"
+            required
+            placeholder="https://yourcompany.com"
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-black mb-1">Logo URL</label>
+          <input
+            type="url"
+            required
+            placeholder="https://yourcompany.com/logo.png"
+            value={logoUrl}
+            onChange={(e) => setLogoUrl(e.target.value)}
+            className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-black mb-1">Industry</label>
+          <input
+            type="text"
+            required
+            placeholder="e.g., Information Technology"
+            value={industry}
+            onChange={(e) => setIndustry(e.target.value)}
+            className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
           />
         </div>
 

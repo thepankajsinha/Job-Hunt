@@ -14,10 +14,10 @@ const HomePage = () => {
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-15">
-          <h1 className="text-6xl font-bold text-black mb-4">
+          <h1 className="text-4xl font-bold text-black mb-4">
             Find Your Dream Job
           </h1>
-          <p className="text-gray-600 text-xl">
+          <p className="text-gray-600 text-lg">
             Explore top opportunities and apply with one click.
           </p>
           <Link to="/all-jobs">

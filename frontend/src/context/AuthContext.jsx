@@ -24,6 +24,23 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  const registerApplicant = async (firstName, lastName, profileSummary, skills, resumeUrl, email, password) => {
+    try {
+      const res = await api.post("/auth/register/applicant", {
+        firstName,
+        lastName,
+        profileSummary,
+        skills,
+        resumeUrl,
+        email,
+        password
+      });
+      alert(res.data.message);
+    } catch (err) {
+      const errorMessage = err.response?.data?.message;
+      alert(errorMessage);
+    }
+  };
 
   const login = async (email, password) => {
     try {
@@ -59,20 +76,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateProfile = async (name, email, password) => {
-    try {
-      const res = await api.put("/user/update-profile", { name, email, password });
-      alert(res.data.message);
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || "Failed to update profile";
-      alert(errorMessage);
-    }
-  };
-  
-
   return (
     <AuthContext.Provider
-      value={{ signup, login, user, logout, loading, isAuthenticated , updateProfile}}
+      value={{ registerApplicant ,signup, login, user, logout, loading, isAuthenticated}}
     >
       {children}
     </AuthContext.Provider>
