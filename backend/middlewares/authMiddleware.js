@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { sql } from "../lib/db.js";
 dotenv.config();
 
 export const isAuth = async (req, res, next) => {
@@ -36,7 +37,11 @@ export const isEmployer = async (req, res, next) => {
       return res.status(403).json({ message: "Unauthorized, you are not an employer" });
     }
 
-    const result = await sql`SELECT employer_id FROM employers WHERE user_id = ${user_id}`;
+    const result = await sql`SELECT employer_id FROM employers WHERE user_id = ${decoded.userId}`;
+
+    if (result.length === 0) {
+      return res.status(403).json({ message: "Employer not found" });
+    }
 
     req.userId = decoded.userId;
     req.employerId = result[0].employer_id;

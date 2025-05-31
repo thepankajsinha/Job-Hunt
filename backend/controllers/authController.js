@@ -6,14 +6,19 @@ dotenv.config();
 
 export const registerApplicant = async (req, res) => {
   try {
+    // Destructure the request body to get applicant details
     const {first_name, last_name, profile_summary,resume_url, skills, email, password} = req.body;
 
+
+    // Check if the user already exists
     const existingUser = await sql`SELECT * FROM users WHERE email = ${email}`;
     if (existingUser.length > 0) {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+
 
     //first insert into users table
     const result = await sql`
@@ -22,7 +27,10 @@ export const registerApplicant = async (req, res) => {
       RETURNING user_id
     `;
 
+    //get the user_id from the result
     const userId = result[0].user_id;
+
+    
     //then insert into applicants table
     await sql`
       INSERT INTO applicants (user_id, first_name, last_name, profile_summary, resume_url, skills)
@@ -43,14 +51,19 @@ export const registerApplicant = async (req, res) => {
 
 export const registerEmployer = async (req, res) => {
   try {
+    // Destructure the request body to get employer details
     const {name, description,website_url,logo_url,industry, email, password } = req.body;
 
+    // Check if the user already exists
     const existingUser = await sql`SELECT * FROM users WHERE email = ${email}`;
     if (existingUser.length > 0) {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+
     //first insert into users table
     const result = await sql`
       INSERT INTO users (email, password_hash, role)
@@ -58,7 +71,9 @@ export const registerEmployer = async (req, res) => {
       RETURNING user_id
     `;
 
+    //get the user_id from the result
     const userId = result[0].user_id;
+
     //then insert into employers table
     await sql`
       INSERT INTO employers (user_id, name, description, website_url, logo_url, industry)
@@ -107,11 +122,7 @@ export const login = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-      user: {
-        user_id: user.user_id,
-        email: user.email,
-        role: user.role,
-      },
+      data: user
     });
   } catch (error) {
     console.error("Error in login controller:", error.message);
@@ -125,9 +136,10 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   try {
 
+    // Clear the cookie to log out the user
     res.clearCookie("token");
 
-    res.json({ message: "Logged out successfully" });
+    res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.error("Error in logout controller:", error.message);
     res.status(500).json({

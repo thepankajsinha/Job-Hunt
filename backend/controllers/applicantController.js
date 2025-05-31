@@ -13,19 +13,19 @@ export const getApplicant = async (req, res) => {
       WHERE user_id = ${userId}
     `;
 
-    const applicant = result.rows[0];
+    const applicant = result[0];
 
     // Check if the applicant exists
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return res.status(404).json({ message: "Applicant not found" });
     }
-    // Return the applicant's details
+
     res.status(200).json({
       message: "Current applicant fetched successfully",
-      applicant
+      data: applicant
     });
   } catch (error) {
-    console.error("Error fetching current applicant:", error.message);
+    console.error("Error getApplicant controller:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -50,17 +50,15 @@ export const updateApplicant = async (req, res) => {
     `;
 
     // Check if the update was successful
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return res.status(404).json({ message: "Applicant not found" });
     }
 
-    // Return the updated applicant's details
     res.status(200).json({
-      message: "Applicant profile updated successfully",
-      applicant: result.rows[0]
+      message: "Applicant profile updated successfully"
     });
   } catch (error) {
-    console.error("Error updating applicant profile:", error.message);
+    console.error("Error in updateApplicant controller:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
