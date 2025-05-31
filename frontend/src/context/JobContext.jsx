@@ -12,8 +12,8 @@ export const JobProvider = ({ children }) => {
   const getAllJobs = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/jobs/all-jobs");
-      setJobs(res.data.data); // 👈 fix here
+      const res = await api.get("/job/all-jobs");
+      setJobs(res.data.data);
     } catch (err) {
       console.error(err.response?.data?.message || "Failed to fetch jobs.");
     } finally {
@@ -26,7 +26,7 @@ export const JobProvider = ({ children }) => {
   const getJobById = async (job_id) => {
     setLoading(true);
     try {
-      const res = await api.get(`/jobs/${job_id}`);
+      const res = await api.get(`/job/${job_id}`);
       setJobDetails(res.data.data);
     } catch (err) {
       alert(err.response?.data?.message || "Failed to fetch job.");
@@ -39,7 +39,7 @@ export const JobProvider = ({ children }) => {
   const createJob = async (jobData) => {
     setLoading(true);
     try {
-      const res = await api.post("/jobs/create", jobData);
+      const res = await api.post("/job/create-job", jobData);
       await getAllJobs(); // refresh list after creation
       alert(res.data.message);
     } catch (err) {
@@ -53,7 +53,7 @@ export const JobProvider = ({ children }) => {
   const updateJob = async (job_id, updatedData) => {
     setLoading(true);
     try {
-      const res = await api.put(`/jobs/update/${job_id}`, updatedData);
+      const res = await api.put(`/job/update-job/${job_id}`, updatedData);
       await getAllJobs(); // refresh list after update
       alert(res.data.message);
     } catch (err) {
@@ -67,7 +67,7 @@ export const JobProvider = ({ children }) => {
   const deleteJob = async (job_id) => {
     setLoading(true);
     try {
-      const res = await api.delete(`/jobs/delete/${job_id}`);
+      const res = await api.delete(`/job/delete-job/${job_id}`);
       await getAllJobs(); // refresh list after deletion
       alert(res.data.message);
     } catch (err) {
@@ -80,7 +80,7 @@ export const JobProvider = ({ children }) => {
   const getMyJobs = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/jobs/my-jobs");
+      const res = await api.get("/job/my-jobs");
       return res.data; // assuming jobs are in res.data.jobs
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch my jobs.");

@@ -4,19 +4,19 @@ import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import CreateJobPage from "./pages/CreateJobPage";
 import EmployerAllJobPage from "./pages/EmployerAllJobPage";
-import MyProfilePage from "./pages/MyProfilePage";
 import AppliedJobsPage from "./pages/AppliedJobsPage";
 import AllJobsPage from "./pages/AllJobsPage";
 import JobDetailPage from "./pages/JobDetailPage";
 import RegisterApplicant from "./pages/RegisterApplicant";
 import RegisterCompany from "./pages/RegisterCompany";
 import { useAuth } from "./context/AuthContext";
+import ApplicantProfilePage from "./pages/ApplicantProfilePage";
 
 function App() {
   const { user } = useAuth();
 
   const isEmployer = user?.role === "employer";
-  const isApplicant = user?.role === "applicant";
+  const isApplicant = user?.role === "job_seeker";
 
   return (
     <>
@@ -41,7 +41,6 @@ function App() {
         {/* Shared Authenticated Routes */}
         {user && (
           <>
-            <Route path="/my-profile" element={<MyProfilePage />} />
             <Route path="/all-jobs" element={<AllJobsPage />} />
             <Route path="/jobs/:id" element={<JobDetailPage />} />
           </>
@@ -49,7 +48,10 @@ function App() {
 
         {/* Applicant Only Routes */}
         {isApplicant && (
-          <Route path="/applied-jobs" element={<AppliedJobsPage />} />
+          <>
+            <Route path="/applied-jobs" element={<AppliedJobsPage />} />
+            <Route path="/my-profile" element={<ApplicantProfilePage />} />
+          </>
         )}
 
         {/* Employer Only Routes */}

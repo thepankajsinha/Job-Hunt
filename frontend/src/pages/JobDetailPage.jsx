@@ -13,21 +13,7 @@ const JobDetailPage = () => {
   }, [id]);
 
   const handleApply = async () => {
-    const resumeUrl = prompt(
-      "Please enter your public Google Drive resume link to apply:"
-    );
-    if (!resumeUrl || !resumeUrl.trim()) {
-      alert("Application cancelled. You must provide a resume link.");
-      return;
-    }
-
-
-    try {
-      await applyToJob(id, resumeUrl.trim());
-      alert("Application submitted successfully!");
-    } catch (error) {
-      alert("Failed to submit application. Please try again.");
-    }
+    await applyToJob(id);
   };
 
   if (loading || !jobDetails) {
@@ -47,10 +33,10 @@ const JobDetailPage = () => {
 
       <div className="mb-4 space-y-1">
         <p>
-          <strong>Company:</strong> {job.company_name}
+          <strong>Company:</strong> {job.name}
         </p>
         <p>
-          <strong>Location:</strong> {job.location}
+          <strong>Location:</strong> {job.job_location}
         </p>
         <p>
           <strong>Type:</strong> {job.job_type}

@@ -12,9 +12,6 @@ const AllJobsPage = () => {
   return (
     <div className="min-h-screen bg-white py-10 px-4">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold text-black mb-8 text-center">
-          Available Jobs
-        </h1>
 
         {loading ? (
           <div className="flex justify-center items-center">
@@ -32,8 +29,8 @@ const AllJobsPage = () => {
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <div className="flex items-start gap-4">
                     <img
-                      src={job.company_logo}
-                      alt={job.company_name}
+                      src={job.logo_url}
+                      alt={job.name}
                       className="w-16 h-16 object-contain"
                     />
                     <div>
@@ -41,9 +38,9 @@ const AllJobsPage = () => {
                         {job.job_title}
                       </h2>
                       <p className="text-gray-700">
-                        Company: {job.company_name}
+                        Company: {job.name}
                       </p>
-                      <p className="text-gray-700">Location: {job.location}</p>
+                      <p className="text-gray-700">Location: {job.job_location}</p>
                       <p className="text-gray-700">Type: {job.job_type}</p>
                       <p className="text-gray-700">
                         Salary: {job.salary_range}
