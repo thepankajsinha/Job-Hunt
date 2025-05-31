@@ -13,10 +13,11 @@ const PORT = process.env.PORT || 5000;
 
 //import routes
 import authRoute from "./routes/authRoute.js";
-import userRoute from "./routes/userRoute.js";
+import applicantRoute from "./routes/applicantRoute.js";
 import employerRoute from "./routes/employerRoute.js";
 import jobRoute from "./routes/jobRoute.js";
 import applicationRoute from "./routes/applicationRoute.js";
+import bookmarkRoute from "./routes/bookmarkRoute.js";
 
 
 //Inbuilt middlewares
@@ -33,10 +34,11 @@ app.use(
 
 //use routes
 app.use("/auth", authRoute);
-app.use("/user", userRoute);
+app.use("/applicant", applicantRoute);
 app.use("/employer", employerRoute);
-app.use("/jobs", jobRoute);
-app.use("/applications", applicationRoute);
+app.use("/job", jobRoute);
+app.use("/application", applicationRoute);
+app.use("/bookmark", bookmarkRoute);
 
 
 //start server

@@ -12,20 +12,44 @@ export const applyJob = async (req, res) => {
     }
   
     try {
-      const { resume_url } = req.body;
-  
-      if (!resume_url) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-  
-      await sql`
-        INSERT INTO applications (user_id, job_id, resume_url)
-        VALUES (${user_id}, ${job_id}, ${resume_url})
+
+      //get ressume_url form applicant table
+      const result = await sql`
+        SELECT resume_url,applicant_id
+        FROM applicants
+        WHERE user_id = ${user_id}
       `;
-  
-      res.status(201).json({ message: "Application submitted successfully" });
+      if (result.length === 0) {
+        return res.status(400).json({ message: "You are not registered as an applicant" }); 
+      }
+
+      const resume_url = result[0].resume_url;
+      const applicant_id = result[0].applicant_id;
+
+      if (!resume_url) {
+        return res.status(400).json({ message: "Add resume in my profile section" });
+      }
+
+      //check if the user has already applied for the job
+      const existingApplication = await sql`
+        SELECT application_id
+        FROM applications
+        WHERE user_id = ${user_id} AND job_id = ${job_id}
+      `;
+      if (existingApplication.length > 0) {
+        return res.status(400).json({ message: "You have already applied for this job" });
+      }
+
+      //create application
+      const newApplication = await sql`
+        INSERT INTO applications (job_id,applicant_id, resume_url)
+        VALUES (${job_id}, ${applicant_id}, ${resume_url})
+      `;
+      res.status(201).json({
+        message: "Application created successfully",
+      });
     } catch (error) {
-      console.error("Error creating application:", error);
+      console.error("Error in applyJob controller:", error);
       res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -41,21 +65,25 @@ export const getMyJobs = async (req, res) => {
     try {
       const applications = await sql`
         SELECT 
-          a.job_id, 
-          a.resume_url, 
-          a.applied_at, 
-          a.updated_at, 
+          a.application_id,
+          j.job_title,
+          j.job_description,
+          j.location,
+          j.salary_range,
           a.status,
-          j.job_title
         FROM applications a
         JOIN jobs j ON a.job_id = j.job_id
         WHERE a.user_id = ${user_id}
         ORDER BY a.applied_at DESC
       `;
   
+      if (applications.length === 0) {
+        return res.status(404).json({ message: "No applications found" });
+      }
+  
       res.status(200).json({ applications });
     } catch (error) {
-      console.error("Error fetching applications:", error);
+      console.error("Error fetching getMyJob controller", error);
       res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -63,16 +91,8 @@ export const getMyJobs = async (req, res) => {
 
 //employer application controller
 export const updateApplicationStatus = async (req, res) => {
-    const user_id = req.userId;
 
-    //find employer id from user id
-    const result = await sql`
-      SELECT employer_id 
-      FROM employers 
-      WHERE user_id = ${user_id}
-    `;
-
-    const employer_id = result[0]?.employer_id;
+    const employer_id = req.employerId;
 
     const role = req.role;
     const application_id = req.params.application_id;
@@ -92,45 +112,32 @@ export const updateApplicationStatus = async (req, res) => {
       if (!validStatuses.includes(status)) {
         return res.status(400).json({ message: "Invalid status value" });
       }
-  
-      const appCheck = await sql`
-        SELECT applications.application_id
-        FROM applications
-        JOIN jobs ON applications.job_id = jobs.job_id
-        WHERE applications.application_id = ${application_id}
-        AND jobs.employer_id = ${employer_id}
+      // Check if the application exists and belongs to the employer
+      const application = await sql`
+        SELECT a.application_id
+        FROM applications a
+        JOIN jobs j ON a.job_id = j.job_id
+        WHERE a.application_id = ${application_id} AND j.employer_id = ${employer_id}
       `;
-  
-      if (appCheck.length === 0) {
-        return res.status(403).json({ message: "You do not have permission to update this application" });
+      if (application.length === 0) {
+        return res.status(404).json({ message: "Application not found or you do not have permission to update it" });
       }
-  
+      // Update the application status
       await sql`
         UPDATE applications
-        SET status = ${status}, updated_at = NOW()
+        SET status = ${status}
         WHERE application_id = ${application_id}
       `;
-  
       res.status(200).json({ message: "Application status updated successfully" });
     } catch (error) {
-      console.error("Error updating application status:", error);
+      console.error("Error in updateApplicationStatus controller:", error);
       res.status(500).json({ message: "Internal server error" });
     }
 };
 
+
 export const getApplicantsForEmployer = async (req, res) => {
-    const user_id = req.userId;
-
-    //find employer id from user id
-    const result = await sql`
-      SELECT employer_id 
-      FROM employers 
-      WHERE user_id = ${user_id}
-    `;
-
-    const employer_id = result[0]?.employer_id;
-
-
+    const employer_id = req.employerId;
     const role = req.role;
   
     if (role !== "employer") {
@@ -153,7 +160,7 @@ export const getApplicantsForEmployer = async (req, res) => {
   
       res.status(200).json({ applicants });
     } catch (error) {
-      console.error("Error fetching applicants:", error);
+      console.error("Error in getApplicantsForEmployer controller:", error);
       res.status(500).json({ message: "Internal server error" });
     }
 };

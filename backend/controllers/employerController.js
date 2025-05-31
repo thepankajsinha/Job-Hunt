@@ -2,75 +2,66 @@ import dotenv from "dotenv";
 import { sql } from "../lib/db.js";
 dotenv.config();
 
-export const createEmployer = async (req, res) => {
-  const user_id = req.userId;
-  const role = req.role;
-
-  if (role !== "employer") {
-    return res.status(403).json({ message: "Access denied. Employers only." });
-  }
-
-  try {
-    const { company_name, company_description, company_website, company_logo } =
-      req.body;
-
-    if (!company_name || !company_description || !company_website) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    await sql`
-      INSERT INTO employers (user_id, company_name, company_description, company_website, company_logo)
-      VALUES (${user_id}, ${company_name}, ${company_description}, ${company_website}, ${company_logo})`;
-
-    res.status(201).json({ message: "Employer created successfully" });
-  } catch (error) {
-    console.error("Error creating employer:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
+//get current employer
 export const getEmployer = async (req, res) => {
-  const user_id = req.userId;
+  const userId = req.userId;
 
   try {
-    const result =
-      await sql`SELECT * FROM employers WHERE user_id = ${user_id}`;
+    // Fetch the current employer's details from the database
+    const result = await sql`
+      SELECT * FROM employers
+      WHERE user_id = ${userId}
+    `;
 
-    const employer = result[0];
+    const employer = result.rows[0];
 
-    if (result.length === 0) {
-      return res.status(200).json({ message: "Employer not found" });
+    // Check if the employer exists
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Employer not found" });
     }
-
-    res.status(200).json({ employer});
+    
+    // Return the employer's details
+    res.status(200).json({
+      message: "Current employer fetched successfully",
+      employer
+    });
   } catch (error) {
-    console.error("Error fetching employer:", error);
+    console.error("Error fetching current employer:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// Update employer profile
 export const updateEmployer = async (req, res) => {
-  const user_id = req.userId;
+  const userId = req.userId;
+
+  const {name, description, website_url, logo_url, industry } = req.body;
 
   try {
-    const { company_name, company_description, company_website, company_logo } =
-      req.body;
+    // Update the employer's profile in the database
+    const result = await sql`
+      UPDATE employers
+      SET name = ${name},
+          description = ${description},
+          website_url = ${website_url},
+          logo_url = ${logo_url},
+          industry = ${industry}
+      WHERE user_id = ${userId}
+      RETURNING *
+    `;
 
-    if (!company_name || !company_description || !company_website) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // Check if the update was successful
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Employer not found" });
     }
 
-    await sql`
-      UPDATE employers
-      SET company_name = ${company_name},
-          company_description = ${company_description},
-          company_website = ${company_website},
-          company_logo = ${company_logo}
-      WHERE user_id = ${user_id}`;
-
-    res.status(200).json({ message: "Employer updated successfully" });
+    // Return the updated employer's details
+    res.status(200).json({
+      message: "Employer profile updated successfully",
+      employer: result.rows[0]
+    });
   } catch (error) {
-    console.error("Error updating employer:", error);
+    console.error("Error updating employer profile:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };

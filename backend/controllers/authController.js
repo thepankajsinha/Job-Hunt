@@ -4,28 +4,36 @@ import dotenv from "dotenv";
 import { sql } from "../lib/db.js";
 dotenv.config();
 
-export const register = async (req, res) => {
+export const registerApplicant = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-
-    if (!name || !email || !password || !role) {
-      return res.status(400).json({ message: "Please enter all fields" });
-    }
+    const {first_name, last_name, profile_summary,resume_url, skills, email, password} = req.body;
 
     const existingUser = await sql`SELECT * FROM users WHERE email = ${email}`;
     if (existingUser.length > 0) {
-      return res.status(400).json({ message: "Email already exists" });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await sql`INSERT INTO users (name, email, password_hash, role) VALUES (${name}, ${email}, ${hashedPassword}, ${role})`;
+    //first insert into users table
+    const result = await sql`
+      INSERT INTO users (email, password_hash, role)
+      VALUES (${email}, ${hashedPassword}, 'job_seeker')
+      RETURNING user_id
+    `;
+
+    const userId = result[0].user_id;
+    //then insert into applicants table
+    await sql`
+      INSERT INTO applicants (user_id, first_name, last_name, profile_summary, resume_url, skills)
+      VALUES (${userId}, ${first_name}, ${last_name}, ${profile_summary}, ${resume_url}, ${skills})
+    `;
 
     res.status(201).json({
-      message: "User created successfully",
+      message: "Applicant registered successfully"
     });
   } catch (error) {
-    console.error("Error in register:", error.message);
+    console.error("Error in registerApplicant controller:", error.message);
     res.status(500).json({
       message: "Server error",
       error: error.message,
@@ -33,14 +41,46 @@ export const register = async (req, res) => {
   }
 };
 
+export const registerEmployer = async (req, res) => {
+  try {
+    const {name, description,website_url,logo_url,industry, email, password } = req.body;
+
+    const existingUser = await sql`SELECT * FROM users WHERE email = ${email}`;
+    if (existingUser.length > 0) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    //first insert into users table
+    const result = await sql`
+      INSERT INTO users (email, password_hash, role)
+      VALUES (${email}, ${hashedPassword}, 'employer')
+      RETURNING user_id
+    `;
+
+    const userId = result[0].user_id;
+    //then insert into employers table
+    await sql`
+      INSERT INTO employers (user_id, name, description, website_url, logo_url, industry)
+      VALUES (${userId}, ${name}, ${description}, ${website_url}, ${logo_url}, ${industry})
+    `;
+
+    res.status(201).json({
+      message: "Employer registered successfully"
+    });
+  } catch (error) {
+    console.error("Error in registerEmployer controller:", error.message);
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+}
+
 export const login = async (req, res) => {
   try {
 
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "Please enter all fields" });
-    }
 
     const result = await sql`SELECT * FROM users WHERE email = ${email}`;
     if (result.length === 0) {
@@ -65,9 +105,16 @@ export const login = async (req, res) => {
     
     delete user.password_hash;
 
-    res.json({ user, message: "Logged in successfully" });
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        user_id: user.user_id,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    console.error("Error in login:", error.message);
+    console.error("Error in login controller:", error.message);
     res.status(500).json({
       message: "Server error",
       error: error.message,
@@ -82,7 +129,7 @@ export const logout = async (req, res) => {
 
     res.json({ message: "Logged out successfully" });
   } catch (error) {
-    console.error("Error in logout:", error.message);
+    console.error("Error in logout controller:", error.message);
     res.status(500).json({
       message: "Server error",
       error: error.message,

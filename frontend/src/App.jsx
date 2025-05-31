@@ -11,6 +11,8 @@ import MyProfilePage from "./pages/MyProfilePage";
 import AppliedJobsPage from "./pages/AppliedJobsPage";
 import AllJobsPage from "./pages/AllJobsPage";
 import JobDetailPage from "./pages/JobDetailPage";
+import RegisterApplicant from "./pages/RegisterApplicant";
+import RegisterCompany from "./pages/RegisterCompany";
 
 function App() {
 
@@ -22,6 +24,8 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/register/applicant" element={<RegisterApplicant />} />
+        <Route path="/register/employer" element={<RegisterCompany />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/create-company" element={<CreateCompanyPage />} />
         <Route path="/create-job" element={<CreateJobPage />} />

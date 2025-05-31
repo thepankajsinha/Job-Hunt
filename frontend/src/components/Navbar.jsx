@@ -108,10 +108,16 @@ export default function Navbar() {
                   Login
                 </Link>
                 <Link
-                  to="/signup"
-                  className="bg-gray-800 text-white text-sm px-4 py-2 rounded-md hover:bg-gray-900"
+                  to="/register/applicant"
+                  className="border border-black text-black bg-white text-sm px-4 py-2 rounded-md hover:bg-black hover:text-white"
                 >
-                  Sign Up
+                  Applicant
+                </Link>
+                <Link
+                  to="/register/employer"
+                  className="border border-black text-black bg-white text-sm px-4 py-2 rounded-md hover:bg-black hover:text-white"
+                >
+                  Employer
                 </Link>
               </>
             )

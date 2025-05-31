@@ -36,7 +36,10 @@ export const isEmployer = async (req, res, next) => {
       return res.status(403).json({ message: "Unauthorized, you are not an employer" });
     }
 
+    const result = await sql`SELECT employer_id FROM employers WHERE user_id = ${user_id}`;
+
     req.userId = decoded.userId;
+    req.employerId = result[0].employer_id;
     req.role = decoded.role;
 
     next();
