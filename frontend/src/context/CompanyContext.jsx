@@ -6,38 +6,42 @@ const CompanyContext = createContext();
 export const useCompany = () => useContext(CompanyContext);
 
 export const CompanyProvider = ({ children }) => {
-  const [company, setCompany] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [employer, setEmployer] = useState(null);
 
-  const fetchCompany = async () => {
+  // Fetch current employer
+  const getEmployer = async () => {
     try {
-      const res = await api.get("/employer/me");
-      setCompany(res.data.employer);
-    } catch (err) {
-      console.error("Error fetching company", err);
-      setCompany(null);
-    } finally {
-      setLoading(false);
+      const response = await api.get("/employer/profile");
+      setEmployer(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch employer:", error);
     }
   };
 
-  const createCompany = async (data) => {
-    await api.post("/employer/create", data);
-    await fetchCompany();
+  // Update employer profile
+  const updateEmployer = async ({name,description,website_url,logo_url,industry}) => {
+    try {
+      const response = await api.put("/employer/update-employer", { name, description, website_url, logo_url, industry });
+      await getEmployer(); // Re-fetch after update
+      return response.data;
+    } catch (error) {
+      console.error("Failed to update employer:", error);
+      throw error;
+    } 
   };
 
-  const updateCompany = async (data) => {
-    await api.put("/employer/update", data);
-    await fetchCompany();
-  };
-
+  // Fetch employer on mount
   useEffect(() => {
-    fetchCompany();
+    getEmployer();
   }, []);
 
   return (
     <CompanyContext.Provider
-      value={{ company, setCompany, loading, createCompany, updateCompany }}
+      value={{
+        employer,
+        getEmployer,
+        updateEmployer,
+      }}
     >
       {children}
     </CompanyContext.Provider>

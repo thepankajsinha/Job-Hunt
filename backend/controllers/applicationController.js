@@ -80,12 +80,21 @@ export const getAppliedJobs = async (req, res) => {
       const applicant_id = applicant[0].applicant_id;
 
       const applications = await sql`
-        SELECT j.*, a.application_id, a.status
+        SELECT 
+          j.*, 
+          e.name,
+          e.logo_url,
+          a.application_id, 
+          a.status, 
+          a.applied_at
         FROM applications a
         JOIN jobs j ON a.job_id = j.job_id
+        JOIN employers e ON j.employer_id = e.employer_id
         WHERE a.applicant_id = ${applicant_id}
         ORDER BY a.applied_at DESC
       `;
+
+
   
 
       if (applications.length === 0) {

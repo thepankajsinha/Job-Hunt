@@ -1,79 +1,83 @@
 import React, { useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useApplication } from "../context/ApplicationContext.jsx";
+import { useApplication } from "../context/ApplicationContext";
+import { Link } from "react-router-dom";
 
 const AppliedJobsPage = () => {
-  const { user, loading: authLoading } = useAuth();
   const { appliedJobs, fetchAppliedJobs, loading } = useApplication();
 
   useEffect(() => {
-    if (user) fetchAppliedJobs();
-  }, [user]);
-
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <p className="text-gray-600 text-lg">Loading applied jobs...</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <p className="text-red-600 text-lg">
-          Please log in to view your applied jobs.
-        </p>
-      </div>
-    );
-  }
+    fetchAppliedJobs();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white py-10 px-4">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-black mb-6 text-center">
-          My Applied Jobs
-        </h1>
+    <div className="min-h-screen bg-gray-50 p-6 sm:p-10">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-black text-center">
+        My Applied Jobs
+      </h1>
 
-        {appliedJobs.length === 0 ? (
-          <p className="text-center text-gray-600">No applied jobs found.</p>
-        ) : (
-          <div className="space-y-4">
-            {appliedJobs.map((job) => (
-              <div
-                key={job.job_id}
-                className="border border-black rounded-xl p-5 shadow-sm"
-              >
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+      {loading && <p className="text-gray-500">Loading...</p>}
+      {!loading && appliedJobs.length === 0 && (
+        <p className="text-gray-600">You haven't applied to any jobs yet.</p>
+      )}
+
+      <div className="grid gap-6">
+        {appliedJobs.map((job) => {
+          const appliedDate = job.applied_at
+            ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(
+                new Date(job.applied_at)
+              )
+            : "N/A";
+
+          return (
+            <div
+              key={job.job_id}
+              className="border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition bg-white"
+            >
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                <div className="flex gap-4">
+                  <img
+                    src={job.logo_url || "/placeholder-logo.png"}
+                    alt={job.company_name}
+                    className="w-16 h-16 object-contain rounded-md bg-gray-50"
+                  />
                   <div>
-                    <h2 className="text-xl font-semibold text-black">
+                    <h2 className="text-lg sm:text-xl font-semibold text-black">
                       {job.job_title}
                     </h2>
                     <p className="text-gray-700 text-sm">
-                      Applied At:{" "}
-                      {new Date(job.applied_at).toLocaleDateString()}
+                      Company: {job.name}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-2 text-sm">
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
+                        📍 {job.job_location || "N/A"}
+                      </span>
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
+                        🕒 {job.job_type || "N/A"}
+                      </span>
+                      <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
+                        💰 {job.salary_range || "Not disclosed"}
+                      </span>
+                      <span className="bg-gray-200 text-black px-2 py-1 rounded-full font-medium">
+                        📌 Status: {job.status}
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-xs mt-2">
+                      Applied on: {appliedDate}
                     </p>
                   </div>
-                  <div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        job.status === "applied"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : job.status === "hired"
-                          ? "bg-green-100 text-green-800"
-                          : job.status === "rejected"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {job.status}
-                    </span>
-                  </div>
+                </div>
+                <div>
+                  <Link
+                    to={`/jobs/${job.job_id}`}
+                    className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 text-sm"
+                  >
+                    View
+                  </Link>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
