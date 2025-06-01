@@ -1,4 +1,5 @@
 import { Route, Routes, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
@@ -9,7 +10,6 @@ import AllJobsPage from "./pages/AllJobsPage";
 import JobDetailPage from "./pages/JobDetailPage";
 import RegisterApplicant from "./pages/RegisterApplicant";
 import RegisterCompany from "./pages/RegisterCompany";
-import { useAuth } from "./context/AuthContext";
 import ApplicantProfilePage from "./pages/ApplicantProfilePage";
 
 function App() {
@@ -22,48 +22,33 @@ function App() {
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<HomePage />} />
 
         {/* Public Routes */}
-        <Route
-          path="/login"
-          element={!user ? <LoginPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/register/applicant"
-          element={!user ? <RegisterApplicant /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/register/employer"
-          element={!user ? <RegisterCompany /> : <Navigate to="/" />}
-        />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/jobs" element={<AllJobsPage />} />
+        <Route path="/jobs/:id" element={<JobDetailPage />} />
 
-        {/* Shared Authenticated Routes */}
-        {user && (
-          <>
-            <Route path="/all-jobs" element={<AllJobsPage />} />
-            <Route path="/jobs/:id" element={<JobDetailPage />} />
-          </>
-        )}
+        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
+        <Route path="/register/applicant" element={!user ? <RegisterApplicant /> : <Navigate to="/" />} />
+        <Route path="/register/employer" element={!user ? <RegisterCompany /> : <Navigate to="/" />} />
+
 
         {/* Applicant Only Routes */}
         {isApplicant && (
           <>
-            <Route path="/applied-jobs" element={<AppliedJobsPage />} />
-            <Route path="/my-profile" element={<ApplicantProfilePage />} />
+            <Route path="/applicant/applied-jobs" element={<AppliedJobsPage />} />
+            <Route path="/applicant/profile" element={<ApplicantProfilePage />} />
           </>
         )}
+
 
         {/* Employer Only Routes */}
         {isEmployer && (
           <>
-            <Route path="/create-job" element={<CreateJobPage />} />
-            <Route path="/employer-jobs" element={<EmployerAllJobPage />} />
+            <Route path="/employer/create-job" element={<CreateJobPage />} />
+            <Route path="/employer/created-jobs" element={<EmployerAllJobPage />} />
           </>
-        )}
-
-        {/* Fallback for undefined routes */}
-        <Route path="*" element={<Navigate to="/" />} />
+        )}  
       </Routes>
     </>
   );
