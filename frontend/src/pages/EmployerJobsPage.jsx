@@ -1,24 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useJob } from "../context/JobContext";
 import { useNavigate } from "react-router-dom";
 
 export default function EmployerJobsPage() {
-  const { getMyJobs, deleteJob, loading } = useJob();
-  const [myJobs, setMyJobs] = useState([]);
+  const { employerJobs, getMyJobs, deleteJob } = useJob();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const res = await getMyJobs();
-        if (res?.data) setMyJobs(res.data);
-        else setMyJobs([]);
-      } catch (err) {
-        console.error("Error fetching jobs:", err);
-      }
-    };
-    fetchJobs();
-  }, []); // Avoid adding getMyJobs to dependency array
+    getMyJobs();
+  }, []);
 
   const handleDelete = async (jobId) => {
     const confirmDelete = window.confirm(
@@ -26,8 +16,7 @@ export default function EmployerJobsPage() {
     );
     if (confirmDelete) {
       await deleteJob(jobId);
-      const res = await getMyJobs();
-      if (res?.data) setMyJobs(res.data);
+      await getMyJobs(); // Refresh the employer jobs list after deletion
     }
   };
 
@@ -36,27 +25,19 @@ export default function EmployerJobsPage() {
       new Date(dateStr)
     );
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-white text-black">
-        Loading jobs...
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-5xl mx-auto mt-10 px-4">
       <h1 className="text-3xl font-bold text-center mb-8 text-black">
         My Posted Jobs
       </h1>
 
-      {myJobs.length === 0 ? (
+      {employerJobs.length === 0 ? (
         <p className="text-center text-black">
           You haven't posted any jobs yet.
         </p>
       ) : (
         <div className="space-y-6">
-          {myJobs.map((job) => (
+          {employerJobs.map((job) => (
             <div
               key={job.job_id}
               className="border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition bg-white"
@@ -90,12 +71,7 @@ export default function EmployerJobsPage() {
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                  <button
-                    onClick={() => navigate(`/job/update-job/${job.job_id}`)}
-                    className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-900"
-                  >
-                    Update
-                  </button>
+                  <button onClick={() => navigate(`/job/update-job/${job.job_id}`)} className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-900" > Update </button>
                   <button
                     onClick={() => handleDelete(job.job_id)}
                     className="border border-red-500 text-red-500 px-4 py-2 rounded-md text-sm hover:bg-red-500 hover:text-white"

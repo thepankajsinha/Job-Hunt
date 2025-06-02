@@ -55,7 +55,7 @@ export const updateEmployer = async (req, res) => {
     }
 
     // Return the updated employer's details
-    res.status(200).json({
+    res.status(201).json({
       message: "Employer profile updated successfully",
     });
   } catch (error) {

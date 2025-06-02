@@ -1,6 +1,5 @@
 import { sql } from "../lib/db.js";
 
-// Create a new job
 export const createJob = async (req, res) => {
   try {
     const employer_id = req.employerId;
@@ -27,7 +26,6 @@ export const createJob = async (req, res) => {
 };
 
 
-// Update job details
 export const updateJob = async (req, res) => {
   try {
     const employer_id = req.employerId;
@@ -61,7 +59,6 @@ export const updateJob = async (req, res) => {
   }
 };
 
-// Delete a job
 export const deleteJob = async (req, res) => {
   try {
     const employer_id = req.employerId;
@@ -83,7 +80,6 @@ export const deleteJob = async (req, res) => {
   }
 };
 
-// Get all jobs with employer details
 export const getAllJobs = async (req, res) => {
   try {
     const jobs = await sql`
@@ -106,7 +102,6 @@ export const getAllJobs = async (req, res) => {
 };
 
 
-// Get a job by its ID with employer details
 export const getJobById = async (req, res) => {
   try {
     const job_id = req.params.job_id;

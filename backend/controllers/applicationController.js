@@ -43,10 +43,7 @@ export const applyJob = async (req, res) => {
       }
 
       //create application
-      const newApplication = await sql`
-        INSERT INTO applications (job_id,applicant_id, resume_url)
-        VALUES (${job_id}, ${applicant_id}, ${resume_url})
-      `;
+      await sql` INSERT INTO applications (job_id,applicant_id, resume_url) VALUES (${job_id}, ${applicant_id}, ${resume_url}) `;
 
       res.status(201).json({
         message: "Job applied successfully",
@@ -164,6 +161,7 @@ export const getAllApplicants = async (req, res) => {
       SELECT 
         a.status,
         a.resume_url,
+        a.application_id,
 
         j.job_title,
 

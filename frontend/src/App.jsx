@@ -13,6 +13,7 @@ import ApplicantProfilePage from "./pages/ApplicantProfilePage";
 import CompanyProfilePage from "./pages/CompanyProfilePage";
 import ApplicationPage from "./pages/ApplicationPage";
 import EmployerJobsPage from "./pages/EmployerJobsPage";
+import UpdateJobPage from "./pages/UpdateJobPage";
 
 function App() {
   const { user } = useAuth();
@@ -28,7 +29,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/jobs" element={<AllJobsPage />} />
-        <Route path="/jobs/:id" element={<JobDetailPage />} />
+        <Route path="/jobs/:job_id" element={<JobDetailPage />} />
         
         
         <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
@@ -52,6 +53,7 @@ function App() {
             <Route path="/employer/create-job" element={<CreateJobPage />} />
             <Route path="/employer/created-jobs" element={<EmployerJobsPage />} />
             <Route path="/employer/applications" element={<ApplicationPage />} />
+            <Route path="/job/update-job/:job_id" element={<UpdateJobPage />} />
           </>
         )}  
       </Routes>

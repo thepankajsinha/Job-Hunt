@@ -1,106 +1,91 @@
 import React, { createContext, useContext, useState } from "react";
 import api from "../api/axios.js";
+import { toast } from "react-toastify";
 
 const JobContext = createContext();
 
 export const JobProvider = ({ children }) => {
   const [jobs, setJobs] = useState([]);
   const [jobDetails, setJobDetails] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [employerJobs, setEmployerJobs] = useState([]);
 
-  // Get all jobs
   const getAllJobs = async () => {
-    setLoading(true);
     try {
       const res = await api.get("/job/all-jobs");
       setJobs(res.data.data);
     } catch (err) {
-      console.error(err.response?.data?.message || "Failed to fetch jobs.");
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.message || "Failed to fetch jobs.");
     }
   };
-  
 
-  // Get job by ID
   const getJobById = async (job_id) => {
-    setLoading(true);
     try {
       const res = await api.get(`/job/${job_id}`);
       setJobDetails(res.data.data);
+      return res.data.data;
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to fetch job.");
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.message || "Failed to fetch job.");
     }
   };
 
-  // Create new job
+
   const createJob = async (jobData) => {
-    setLoading(true);
     try {
       const res = await api.post("/job/create-job", jobData);
-      await getAllJobs(); // refresh list after creation
-      alert(res.data.message);
+      if(res.status === 201) {
+        toast.success(res.data.message);
+      }
+      await getAllJobs();
     } catch (err) {
-        alert(err.response?.data?.message || "Failed to create job.");
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.message || "Failed to create job.");
     }
   };
 
-  // Update job
   const updateJob = async (job_id, updatedData) => {
-    setLoading(true);
     try {
       const res = await api.put(`/job/update-job/${job_id}`, updatedData);
-      await getAllJobs(); // refresh list after update
-      alert(res.data.message);
+      if(res.status === 200) {
+        toast.success(res.data.message);
+      }
+      await getAllJobs();
     } catch (err) {
-        alert(err.response?.data?.message || "Failed to update job.");
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.message || "Failed to update job.");
     }
   };
 
-  // Delete job
   const deleteJob = async (job_id) => {
-    setLoading(true);
     try {
       const res = await api.delete(`/job/delete-job/${job_id}`);
-      await getAllJobs(); // refresh list after deletion
-      alert(res.data.message);
+      if(res.status === 200) {
+        toast.success(res.data.message);
+      }
+      await getAllJobs();
     } catch (err) {
-        alert(err.response?.data?.message || "Failed to delete job.");  
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.message || "Failed to delete job.");
     }
   };
 
   const getMyJobs = async () => {
-    setLoading(true);
     try {
       const res = await api.get("/job/my-jobs");
-      return res.data; // assuming jobs are in res.data.jobs
+      setEmployerJobs(res.data.data);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch my jobs.");
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.message || "Failed to fetch your jobs.");
     }
-  }
+  };
 
   return (
     <JobContext.Provider
       value={{
         jobs,
         jobDetails,
+        employerJobs,
         getAllJobs,
         getJobById,
         createJob,
         updateJob,
         deleteJob,
         getMyJobs,
-        loading,
       }}
     >
       {children}

@@ -1,111 +1,80 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/axios.js";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
-      setLoading(true);
       try {
         const res = await api.get("/auth/me");
         setUser(res.data.data);
       } catch (err) {
         setUser(null);
-      } finally {
-        setLoading(false);
       }
     };
     checkAuth();
   }, []);
 
-  const registerApplicant = async ({
-    first_name,
-    last_name,
-    profile_summary,
-    resume_url,
-    skills,
-    email,
-    password,
-  }) => {
-    setLoading(true);
+
+
+  const registerApplicant = async ({ first_name, last_name, profile_summary, resume_url, skills, email, password, }) => {
     try {
-      const res = await api.post("/auth/register/applicant", {
-        first_name,
-        last_name,
-        profile_summary,
-        resume_url,
-        skills,
-        email,
-        password,
-      });
-      alert(res.data.message);
+      const res = await api.post("/auth/register/applicant", { first_name, last_name, profile_summary, resume_url, skills, email, password, });
+      if(res.status === 201) {
+        toast.success(res.data.message);
+        navigate("/login");
+      }
     } catch (err) {
-      const errorMessage = err.response?.data?.message;
-      alert(errorMessage);
-    } finally {
-      setLoading(false);
+      const errorMessage = err.response?.data?.message
+      toast.error(errorMessage || "Registration failed");
     }
   };
 
-  const registerEmployer = async ({
-    name,
-    description,
-    website_url,
-    logo_url,
-    industry, 
-    email,
-    password,
-  }) => {
-    setLoading(true);
+  const registerEmployer = async ({ name, description, website_url, logo_url, industry, email, password, }) => {
     try {
-      const res = await api.post("/auth/register/employer", {
-        name,
-        description,
-        website_url,
-        logo_url,
-        industry,
-        email,
-        password,
-      });
-      alert(res.data.message);
+      const res = await api.post("/auth/register/employer", { name, description, website_url, logo_url, industry, email, password, });
+      if(res.status === 201) {
+        toast.success(res.data.message);
+        navigate("/login");
+      }
     } catch (err) {
       const errorMessage = err.response?.data?.message;
-      alert(errorMessage);
-    }
-    finally {
-      setLoading(false);
+      toast.error(errorMessage || "Registration failed");
     }
   };
 
   const login = async (email, password) => {
-    setLoading(true);
     try {
       const res = await api.post("/auth/login", { email, password });
       setUser(res.data.data);
-      alert(res.data.message);
+      if (res.status === 200) {
+        toast.success("Login successful");
+      }
     } catch (err) {
       const errorMessage = err.response?.data?.message;
-      alert(errorMessage);
-    } finally {
-      setLoading(false);
+      toast.error(errorMessage || "Login failed");
     }
   };
 
   const logout = async () => {
-    setLoading(true);
     try {
       const res = await api.post("/auth/logout");
       setUser(null);
-      alert(res.data.message);
+      if (res.status === 200) {
+        toast.success("Logout successful");
+        navigate("/login");
+      }
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Logout failed";
-      alert(errorMessage);
-    } finally {
-      setLoading(false);
+      toast.error(errorMessage);
     }
   };
 
@@ -117,7 +86,6 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         user,
-        loading,
       }}
     >
       {children}

@@ -9,16 +9,10 @@ const JobCard = ({ job }) => {
     <div className="border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition bg-white">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div className="flex gap-4">
-          <img
-            src={job.logo_url}
-            alt={job.name}
-            className="w-16 h-16 object-contain rounded-md bg-gray-50"
-          />
+          <img src={job.logo_url} alt={job.name} className="w-16 h-16 object-contain rounded-md bg-gray-50" />
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-black">
-              {job.job_title}
-            </h2>
-            <p className="text-gray-700 text-sm">Company: {job.name}</p>
+            <h2 className="text-lg sm:text-xl font-semibold text-black"> {job.job_title} </h2>
+            <p className="text-gray-700 text-sm">{job.name}</p>
             <div className="flex flex-wrap gap-2 mt-2 text-sm">
               <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
                 📍 {job.job_location}
@@ -36,12 +30,7 @@ const JobCard = ({ job }) => {
           </div>
         </div>
         <div>
-          <Link
-            to={`/jobs/${job.job_id}`}
-            className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 text-sm"
-          >
-            View
-          </Link>
+          <Link to={`/jobs/${job.job_id}`} className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 text-sm" > View </Link>
         </div>
       </div>
     </div>

@@ -54,7 +54,7 @@ export const updateApplicant = async (req, res) => {
       return res.status(404).json({ message: "Applicant not found" });
     }
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Applicant profile updated successfully"
     });
   } catch (error) {

@@ -1,32 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useJob } from "../context/JobContext";
 import { useApplication } from "../context/ApplicationContext";
 
 const JobDetailPage = () => {
-  const { id } = useParams();
-  const { jobDetails, getJobById, loading } = useJob();
-  const { applyToJob } = useApplication();
-  const [applying, setApplying] = useState(false);
+  const { job_id } = useParams();
+  const { jobDetails, getJobById } = useJob();
+  const { applyForJob } = useApplication();
 
   useEffect(() => {
-    getJobById(id);
-  }, [id]);
+    getJobById(job_id);
+  }, [job_id]);
 
   const handleApply = async () => {
-    try {
-      setApplying(true);
-      await applyToJob(id);
-      // Optional: add a success message or toast
-    } finally {
-      setApplying(false);
-    }
+    await applyForJob(job_id);
   };
 
-  if (loading || !jobDetails) {
+  if (!jobDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <p className="text-gray-600 text-lg">Loading job details...</p>
+        <p className="text-gray-600 text-lg">Job not found.</p>
       </div>
     );
   }
@@ -75,12 +68,9 @@ const JobDetailPage = () => {
 
         <button
           onClick={handleApply}
-          disabled={applying}
-          className={`w-full sm:w-auto bg-black text-white px-6 py-2 rounded-md hover:bg-gray-900 transition ${
-            applying ? "opacity-70 cursor-not-allowed" : ""
-          }`}
+          className="w-full sm:w-auto bg-black text-white px-6 py-2 rounded-md hover:bg-gray-900 transition"
         >
-          {applying ? "Applying..." : "Apply Now"}
+          Apply Now
         </button>
       </div>
     </div>

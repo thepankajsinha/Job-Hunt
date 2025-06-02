@@ -1,19 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useApplication } from "../context/ApplicationContext";
 
-const statusOptions = ["Pending", "Reviewed", "Accepted", "Rejected"];
+const statusOptions = ["Pending", "Hired", "Rejected"];
 
 export default function ApplicationPage() {
-  const {
-    fetchApplicants,
-    applicants,
-    loading,
-    error,
-    updateApplicationStatus,
-    setError,
-  } = useApplication();
-
-  const [statusUpdating, setStatusUpdating] = useState(null);
+  const { fetchApplicants, applicants, updateApplicationStatus } =
+    useApplication();
 
   useEffect(() => {
     fetchApplicants();
@@ -21,35 +13,15 @@ export default function ApplicationPage() {
 
   const handleStatusChange = async (applicationId, newStatus) => {
     try {
-      setStatusUpdating(applicationId);
       await updateApplicationStatus(applicationId, newStatus);
-      await fetchApplicants(); // refresh data after update
     } catch (err) {
-      console.error("Failed to update status", err);
-    } finally {
-      setStatusUpdating(null);
+      console.error("Failed to update status:", err);
     }
   };
 
-  if (loading && !statusUpdating) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-white text-black">
-        Loading applicants...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-4xl mx-auto mt-10 p-6 bg-white border border-red-500 rounded-xl shadow-md text-red-600">
-        Error: {error}
-      </div>
-    );
-  }
-
   if (!applicants.length) {
     return (
-      <div className="max-w-4xl mx-auto mt-10 p-6 bg-white border border-gray-300 rounded-xl shadow-md text-center text-gray-700">
+      <div className="min-h-screen flex items-center justify-center bg-white text-gray-600 text-lg">
         No applicants found for your jobs.
       </div>
     );
@@ -57,7 +29,7 @@ export default function ApplicationPage() {
 
   return (
     <div className="max-w-5xl mx-auto mt-10 px-4">
-      <h1 className="text-3xl font-bold text-center mb-8 text-black">
+      <h1 className="text-3xl font-bold text-center mb-10 text-black">
         Applicants for Your Jobs
       </h1>
 
@@ -69,27 +41,32 @@ export default function ApplicationPage() {
           >
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
               <div>
-                <h2 className="text-lg sm:text-xl font-semibold text-black">
+                <h2 className="text-xl font-semibold text-black">
                   {app.job_title}
                 </h2>
-                <p className="text-gray-700 text-sm">
-                  Applicant: {app.first_name} {app.last_name}
-                </p>
-                <p className="text-gray-700 text-sm">Email: {app.email}</p>
-                <p className="text-gray-700 text-sm">
-                  Resume:{" "}
-                  <a
-                    href={app.resume_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View Resume
-                  </a>
-                </p>
+                <div className="text-sm text-gray-700 mt-2 space-y-1">
+                  <p>
+                    <span className="font-medium">Applicant:</span>{" "}
+                    {app.first_name} {app.last_name}
+                  </p>
+                  <p>
+                    <span className="font-medium">Email:</span> {app.email}
+                  </p>
+                  <p>
+                    <span className="font-medium">Resume:</span>{" "}
+                    <a
+                      href={app.resume_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      View Resume
+                    </a>
+                  </p>
+                </div>
               </div>
 
-              <div className="flex flex-col gap-2 w-40">
+              <div className="flex flex-col gap-2 w-full sm:w-48">
                 <label
                   htmlFor={`status-select-${index}`}
                   className="text-sm font-medium text-gray-600"
@@ -102,8 +79,7 @@ export default function ApplicationPage() {
                   onChange={(e) =>
                     handleStatusChange(app.application_id, e.target.value)
                   }
-                  disabled={statusUpdating === app.application_id}
-                  className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                  className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white"
                 >
                   {statusOptions.map((status) => (
                     <option key={status} value={status}>
@@ -111,11 +87,6 @@ export default function ApplicationPage() {
                     </option>
                   ))}
                 </select>
-                {statusUpdating === app.application_id && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Updating status...
-                  </p>
-                )}
               </div>
             </div>
           </div>

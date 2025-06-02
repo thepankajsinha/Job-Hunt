@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../api/axios";
+import { toast } from "react-toastify";
 
 const CompanyContext = createContext();
 
@@ -8,29 +9,30 @@ export const useCompany = () => useContext(CompanyContext);
 export const CompanyProvider = ({ children }) => {
   const [employer, setEmployer] = useState(null);
 
-  // Fetch current employer
   const getEmployer = async () => {
     try {
-      const response = await api.get("/employer/profile");
-      setEmployer(response.data.data);
+      const res = await api.get("/employer/profile");
+      setEmployer(res.data.data);
     } catch (error) {
-      console.error("Failed to fetch employer:", error);
+      const errorMessage = error.response?.data?.message || "Failed to fetch employer data";
+      toast.error(errorMessage);
+      setEmployer(null);
     }
   };
 
-  // Update employer profile
   const updateEmployer = async ({name,description,website_url,logo_url,industry}) => {
     try {
-      const response = await api.put("/employer/update-employer", { name, description, website_url, logo_url, industry });
-      await getEmployer(); // Re-fetch after update
-      return response.data;
+      const res = await api.put("/employer/update-employer", { name, description, website_url, logo_url, industry });
+      if (res.status === 201) {
+        toast.success(res.data.message);
+      }
+      await getEmployer();
     } catch (error) {
-      console.error("Failed to update employer:", error);
-      throw error;
+      const errorMessage = error.response?.data?.message || "Failed to update employer profile";
+      toast.error(errorMessage);
     } 
   };
 
-  // Fetch employer on mount
   useEffect(() => {
     getEmployer();
   }, []);
