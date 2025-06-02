@@ -71,7 +71,15 @@ export default function EmployerJobsPage() {
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                  <button onClick={() => navigate(`/job/update-job/${job.job_id}`)} className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-900" > Update </button>
+                  <button
+                    onClick={() =>
+                      navigate(`/employer/update-job/${job.job_id}`)
+                    }
+                    className="bg-black text-white px-4 py-2 rounded-md text-sm hover:bg-gray-900"
+                  >
+                    {" "}
+                    Update{" "}
+                  </button>
                   <button
                     onClick={() => handleDelete(job.job_id)}
                     className="border border-red-500 text-red-500 px-4 py-2 rounded-md text-sm hover:bg-red-500 hover:text-white"
