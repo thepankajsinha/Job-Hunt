@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true })); // form data ko json me convert
 app.use(cookieParser()); // cookies ko parse karne ke liye
 app.use(
   cors({
-    origin: "https://job-hunt-frontend-7gid.onrender.com/", // frontend ka url
+    origin: "https://job-hunt-frontend-7gid.onrender.com", // frontend ka url
     credentials: true, // cookies ko accees karne ke liye
   })
 );
