@@ -5,6 +5,7 @@ import {
   deleteJob,
   getAllJobs,
   getEmployerJobs,
+  getFilteredJobs,
   getJobById,
   updateJob,
 } from "../controllers/jobController.js";
@@ -13,6 +14,7 @@ const router = express.Router();
 
 // Public Routes (No authentication required)
 router.get("/all-jobs", getAllJobs); // List all jobs (for job seekers)
+router.get("/filtered-jobs", getFilteredJobs);
 
 // 🔒 Protected Routes (Employer Only)
 router.get("/my-jobs", isEmployer, getEmployerJobs);

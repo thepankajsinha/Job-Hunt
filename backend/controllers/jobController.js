@@ -155,3 +155,45 @@ export const getEmployerJobs = async (req, res) => {
     });
   }
 };
+
+
+export const getFilteredJobs = async (req, res) => {
+  try {
+    const { job_type, job_location, keyword } = req.query;
+
+    let baseQuery = sql`
+      SELECT 
+        jobs.*, 
+        employers.name, 
+        employers.logo_url 
+      FROM jobs 
+      JOIN employers ON jobs.employer_id = employers.employer_id
+      WHERE 1=1
+    `;
+
+    if (job_type) {
+      baseQuery = sql`${baseQuery} AND LOWER(jobs.job_type) = LOWER(${job_type})`;
+    }
+
+    if (job_location) {
+      baseQuery = sql`${baseQuery} AND LOWER(jobs.job_location) LIKE LOWER(${`%${job_location}%`})`;
+    }
+
+    if (keyword) {
+      baseQuery = sql`${baseQuery} AND LOWER(jobs.job_title) LIKE LOWER(${`%${keyword}%`})`;
+    }
+
+    baseQuery = sql`${baseQuery} ORDER BY jobs.posted_at DESC`;
+
+    const jobs = await baseQuery;
+
+    res.status(200).json({
+      message: "Filtered jobs fetched successfully",
+      data: jobs,
+    });
+  } catch (error) {
+    console.error("Error in getFilteredJobs controller:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+

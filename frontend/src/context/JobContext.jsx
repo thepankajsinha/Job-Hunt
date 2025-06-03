@@ -74,6 +74,29 @@ export const JobProvider = ({ children }) => {
     }
   };
 
+  const getFilteredJobs = async (filters = {}) => {
+    try {
+      // Build query params string from filters object
+      const queryParams = new URLSearchParams();
+
+      if (filters.job_type) queryParams.append("job_type", filters.job_type);
+      if (filters.job_location)
+        queryParams.append("job_location", filters.job_location);
+      if (filters.keyword) queryParams.append("keyword", filters.keyword);
+
+      const res = await api.get(`/job/filtered-jobs?${queryParams.toString()}`);
+      setJobs(res.data.data);
+
+      if(res.status === 200) {
+        toast.success(res.data.message);
+      }
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to fetch filtered jobs."
+      );
+    }
+  };
+
   return (
     <JobContext.Provider
       value={{
@@ -86,6 +109,7 @@ export const JobProvider = ({ children }) => {
         updateJob,
         deleteJob,
         getMyJobs,
+        getFilteredJobs,
       }}
     >
       {children}
