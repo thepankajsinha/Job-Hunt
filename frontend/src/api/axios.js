@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://job-hunt-backend-pa9o.onrender.com",
   withCredentials: true, // Set to true if using cookies
 });
 
