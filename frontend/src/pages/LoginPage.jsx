@@ -1,131 +1,59 @@
-import React, { useState, useEffect } from "react";
-import { Mail, Lock } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // ✅ import context
-import { toast } from "react-toastify";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-const LoginPage = () => {
-  const { loginUser, actionLoading, user } = useAuth(); // ✅ from context
+export default function LoginPage() {
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
 
-  // ✅ Load saved email on mount
-  useEffect(() => {
-    const savedEmail = localStorage.getItem("rememberedEmail");
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
-    }
-  }, []);
-
-  // ✅ Redirect if already logged in
-  useEffect(() => {
-    if (user) navigate("/dashboard"); // adjust route as needed
-  }, [user, navigate]);
-
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      toast.error("Please fill in both fields!");
-      return;
-    }
-
-    // Save or clear remembered email
-    if (rememberMe) {
-      localStorage.setItem("rememberedEmail", email);
-    } else {
-      localStorage.removeItem("rememberedEmail");
-    }
-
-    // 🚀 Call context function
-    const res = await loginUser(email, password);
-
-    if (res?.success === false) {
-      toast.error(res.message);
-    } else {
-      toast.success("Login successful!");
-      navigate("/dashboard");
-    }
+    await login(email, password);
+    navigate("/");
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white py-12 px-6">
-      <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
-        {/* Header */}
-        <h2 className="text-3xl font-extrabold text-gray-800 text-center mb-2">
-          Welcome Back to
-        </h2>
-        <h3 className="text-3xl font-extrabold text-blue-600 text-center mb-6">
-          Resume Analyser
-        </h3>
-
-        {/* Email Input */}
-        <div className="relative mb-4">
-          <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
-          <input
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg 
-            focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        {/* Password Input */}
-        <div className="relative mb-3">
-          <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg 
-            focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        {/* Remember Me */}
-        <div className="flex items-center justify-between mb-6">
-          <label className="flex items-center space-x-2 text-gray-600 text-sm cursor-pointer">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="max-w-md w-full bg-white border border-black rounded-xl shadow-md p-6">
+        <h2 className="text-2xl font-bold text-center mb-6 text-black">Login</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-black mb-1">Email</label>
             <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4 accent-blue-600"
+              type="email"
+              name="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
             />
-            <span>Remember me</span>
-          </label>
-        </div>
+          </div>
 
-        {/* CTA Button */}
-        <button
-          onClick={handleLogin}
-          disabled={actionLoading}
-          className={`w-full py-3 text-white font-semibold rounded-lg transition 
-            ${
-              actionLoading
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
-        >
-          {actionLoading ? "Logging in..." : "Login"}
-        </button>
+          <div>
+            <label className="block text-black mb-1">Password</label>
+            <input
+              type="password"
+              name="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              className="w-full border border-black px-4 py-2 rounded-md focus:outline-none"
+            />
+          </div>
 
-        {/* Footer */}
-        <p className="text-sm text-gray-500 text-center mt-6">
-          Don’t have an account?{" "}
-          <Link to={"/register"} className="text-blue-600 hover:underline">
-            Sign Up
-          </Link>
-        </p>
+          <button
+            type="submit"
+            className="w-full bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900"
+          >
+            Log In
+          </button>
+        </form>
       </div>
-    </section>
+    </div>
   );
-};
-
-export default LoginPage;
+}

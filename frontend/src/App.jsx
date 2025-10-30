@@ -1,65 +1,61 @@
 import { Route, Routes, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import HomePage from "./pages/HomePage";
-import SignupPage from "./pages/SignupPage";
-import LoginPage from "./pages/LoginPage";
-import ResumeUploadPage from "./pages/ResumeUploadPage";
-import ChooseModePage from "./pages/ChooseModePage";
-import JobMatchingPage from "./pages/JobMatchingPage";
 import { useAuth } from "./context/AuthContext";
+import Navbar from "./components/Navbar";
+import LoginPage from "./pages/LoginPage";
+import HomePage from "./pages/HomePage";
+import CreateJobPage from "./pages/CreateJobPage";
+import AppliedJobsPage from "./pages/AppliedJobsPage";
+import AllJobsPage from "./pages/AllJobsPage";
+import JobDetailPage from "./pages/JobDetailPage";
+import RegisterApplicant from "./pages/RegisterApplicant";
+import RegisterCompany from "./pages/RegisterCompany";
+import ApplicantProfilePage from "./pages/ApplicantProfilePage";
+import CompanyProfilePage from "./pages/CompanyProfilePage";
+import ApplicationPage from "./pages/ApplicationPage";
+import EmployerJobsPage from "./pages/EmployerJobsPage";
+import UpdateJobPage from "./pages/UpdateJobPage";
 
 function App() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
-  // ⏳ Show global loader while checking user auth
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="ml-3 text-blue-600 font-semibold">Loading...</p>
-      </div>
-    );
-  }
+  const isEmployer = user?.role === "employer";
+  const isApplicant = user?.role === "job_seeker";
 
   return (
     <>
       <Navbar />
       <Routes>
-        {/* ✅ Public Routes */}
+
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
-        <Route
-          path="/register"
-          element={
-            !user ? <SignupPage /> : <Navigate to="/resume/mode" replace />
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            !user ? <LoginPage /> : <Navigate to="/resume/mode" replace />
-          }
-        />
+        <Route path="/jobs" element={<AllJobsPage />} />
+        <Route path="/jobs/:job_id" element={<JobDetailPage />} />
+        
+        
+        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
+        <Route path="/register/applicant" element={!user ? <RegisterApplicant /> : <Navigate to="/" />} />
+        <Route path="/register/employer" element={!user ? <RegisterCompany /> : <Navigate to="/" />} />
 
-        {/* ✅ Resume Routes — Only for logged-in users */}
-        <Route
-          path="/resume/mode"
-          element={user ? <ChooseModePage /> : <Navigate to="/login" replace />}
-        />
-        <Route
-          path="/resume/analyse"
-          element={
-            user ? <ResumeUploadPage /> : <Navigate to="/login" replace />
-          }
-        />
-        <Route
-          path="/resume/job-match"
-          element={
-            user ? <JobMatchingPage /> : <Navigate to="/login" replace />
-          }
-        />
 
-        {/* ✅ Catch-all Route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Applicant Only Routes */}
+        {isApplicant && (
+          <>
+            <Route path="/applicant/applied-jobs" element={<AppliedJobsPage />} />
+            <Route path="/applicant/profile" element={<ApplicantProfilePage />} />
+          </>
+        )}
+
+
+        {/* Employer Only Routes */}
+        {isEmployer && (
+          <>
+            <Route path="/employer/profile" element={<CompanyProfilePage />} />
+            <Route path="/employer/create-job" element={<CreateJobPage />} />
+            <Route path="/employer/created-jobs" element={<EmployerJobsPage />} />
+            <Route path="/employer/applications" element={<ApplicationPage />} />
+            <Route path="/employer/update-job/:job_id" element={<UpdateJobPage />} />
+          </>
+        )}  
       </Routes>
     </>
   );

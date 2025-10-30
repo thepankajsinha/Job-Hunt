@@ -3,84 +3,89 @@ import api from "../api/axios.js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
-
-  // ✅ Fetch current user (runs once on refresh)
-  const fetchCurrentUser = async () => {
-    try {
-      const { data } = await api.get("/user/me");
-      setUser(data.user);
-    } catch (error) {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchCurrentUser(); // ✅ ensures user persists after refresh
+    const checkAuth = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        setUser(res.data.data);
+      } catch (err) {
+        setUser(null);
+      }
+    };
+    checkAuth();
   }, []);
 
-  // ✅ Register
-  const registerUser = async (name, email, password) => {
-    setActionLoading(true);
+
+
+  const registerApplicant = async ({ first_name, last_name, profile_summary, resume_url, skills, email, password, }) => {
     try {
-      const res = await api.post("/user/register", { name, email, password });
-      toast.success(res.data.message || "Registration successful");
-      navigate("/login");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Error registering user");
-    } finally {
-      setActionLoading(false);
+      const res = await api.post("/auth/register/applicant", { first_name, last_name, profile_summary, resume_url, skills, email, password, });
+      if(res.status === 201) {
+        toast.success(res.data.message);
+        navigate("/login");
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message
+      toast.error(errorMessage || "Registration failed");
     }
   };
 
-  // ✅ Login
-  const loginUser = async (email, password) => {
-    setActionLoading(true);
+  const registerEmployer = async ({ name, description, website_url, logo_url, industry, email, password, }) => {
     try {
-      const res = await api.post("/user/login", { email, password });
-      setUser(res.data.user);
-      toast.success(res.data.message || "Login successful");
-      navigate("/resume/mode");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
-    } finally {
-      setActionLoading(false);
+      const res = await api.post("/auth/register/employer", { name, description, website_url, logo_url, industry, email, password, });
+      if(res.status === 201) {
+        toast.success(res.data.message);
+        navigate("/login");
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message;
+      toast.error(errorMessage || "Registration failed");
     }
   };
 
-  // ✅ Logout
-  const logoutUser = async () => {
-    setActionLoading(true);
+  const login = async (email, password) => {
     try {
-      const res = await api.post("/user/logout");
+      const res = await api.post("/auth/login", { email, password });
+      setUser(res.data.data);
+      if (res.status === 200) {
+        toast.success("Login successful");
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message;
+      toast.error(errorMessage || "Login failed");
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const res = await api.post("/auth/logout");
       setUser(null);
-      toast.success(res.data.message || "Logout successful");
-      navigate("/");
-    } catch (error) {
-      toast.error("Error logging out");
-    } finally {
-      setActionLoading(false);
+      if (res.status === 200) {
+        toast.success("Logout successful");
+        navigate("/login");
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Logout failed";
+      toast.error(errorMessage);
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
+        registerApplicant,
+        registerEmployer,
+        login,
+        logout,
         user,
-        loading,
-        actionLoading,
-        registerUser,
-        loginUser,
-        logoutUser,
       }}
     >
       {children}
