@@ -1,18 +1,14 @@
-import {neon} from "@neondatabase/serverless";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
-const sql = neon(process.env.DATABASE_URL);
-
 const connectDB = async () => {
-    try {
-        const result = await sql`SELECT version()`;
-        const { version } = result[0];
-        console.log("Database connected successfully");
-        
-    } catch (error) {
-        console.error("Error connecting to the database", error);
-    }
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
+    console.log(`MongoDB connected successfully`);
+  } catch (error) {
+    console.log("Error in connecting to MONGODB", error.message);
+  }
 };
 
-export { sql, connectDB };
+export default connectDB;
